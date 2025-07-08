@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delulu Diaries ✨</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff69b4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Delulu Diaries">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Styles -->
+    <!-- <link rel="stylesheet" href="style.css"> TEMPORARILY DISABLED -->
+    
+    <style>
+        /* Basic Gen Z Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 100px 20px 20px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .mood-input-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mood-input-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        #moodInput {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .preset-moods {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .mood-btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .mood-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+        
+        .submit-btn {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #45b7d1;
+            transform: translateY(-2px);
+        }
+        
+        .mood-posts-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mood-posts-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .no-posts {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Simple Profile Styles */
+        .profile-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+        }
+        
+        .profile-dropdown {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-width: 250px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+        
+        .profile-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .profile-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .profile-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .profile-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .logout-button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-button:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Profile Button -->
+    <button id="profileButton" class="profile-button">
+        👤 Profile
+    </button>
+    
+    <!-- Profile Dropdown -->
+    <div id="profileDropdown" class="profile-dropdown">
+        <div class="profile-info">
+            <img id="profilePhoto" class="profile-photo" src="https://via.placeholder.com/60x60?text=👤" alt="Profile">
+            <div id="profileName" class="profile-name">User Name</div>
+            <div id="profileEmail" class="profile-email">user@example.com</div>
+        </div>
+        <button id="logoutButton" class="logout-button">
+            🚪 Sign Out
+        </button>
+    </div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">✨ Delulu Diaries ✨</h1>
+                <p class="subtitle">Your safe space to be absolutely delulu and share your main character moments 💖</p>
+            </div>
+        </header>
+
+        <!-- Mood Input Section -->
+        <section class="mood-input-section">
+            <h2>How are we feeling today? 🌈</h2>
+            <div class="input-group">
+                <textarea 
+                    id="moodInput" 
+                    placeholder="Spill the tea... what's your vibe today? ☕️✨"
+                    maxlength="280"
+                    rows="3"
+                ></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span>/280
+                </div>
+            </div>
+            
+            <!-- Preset Mood Buttons -->
+            <div class="preset-moods">
+                <button class="mood-btn slay" data-mood="Slay 💅">Slay 💅</button>
+                <button class="mood-btn goofy" data-mood="Goofy 🤪">Goofy 🤪</button>
+                <button class="mood-btn delulu" data-mood="Delulu 💖">Delulu 💖</button>
+                <button class="mood-btn main-character" data-mood="Main Character 👑">Main Character 👑</button>
+            </div>
+            
+            <!-- Submit Button -->
+            <button id="submitMood" class="submit-btn">
+                Post My Vibe ✨
+            </button>
+        </section>
+
+        <!-- Mood Posts Display -->
+        <section class="mood-posts-section">
+            <h2>The Diary Entries 📖</h2>
+            <div id="moodPosts" class="mood-posts">
+                <!-- Posts will be dynamically added here -->
+                <div class="no-posts">
+                    <p>No vibes posted yet... be the first to share your delulu moment! 🦋</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Created with love for the Gen Z by the Gen Z 💕</p>
+    </footer>
+
+    <!-- Firebase SDK with error handling -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" onerror="console.log('Firebase App failed to load')"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" onerror="console.log('Firebase Auth failed to load')"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" onerror="console.log('Firebase Firestore failed to load')"></script>
+    
+    <!-- Firebase Configuration with error handling -->
+    <script>
+        // Try to load Firebase config
+        try {
+            if (typeof firebase !== 'undefined') {
+                // Firebase Configuration for Delulu Diaries
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC2LF9ytlMAhokvAUXYWoNcc_qtKWvU5ok",
+                    authDomain: "deluludiaries-c24f6.firebaseapp.com",
+                    projectId: "deluludiaries-c24f6",
+                    storageBucket: "deluludiaries-c24f6.firebasestorage.app",
+                    messagingSenderId: "706262998930",
+                    appId: "1:706262998930:web:e3a1e0bf6510399030eb4b",
+                    measurementId: "G-DLBC8Z1M36"
+                };
+                
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                console.log('🔥 Firebase initialized successfully');
+            } else {
+                console.log('⚠️ Firebase not available, running in demo mode');
+            }
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script>
+        // Profile UI Elements
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const profilePhoto = document.getElementById('profilePhoto');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const logoutButton = document.getElementById('logoutButton');
+        
+        // Show profile button immediately (for Live Server compatibility)
+        profileButton.style.display = 'block';
+        
+        // Firebase Auth State Management with error handling
+        let currentUser = null;
+        
+        // Wait for Firebase to load, then initialize
+        window.addEventListener('load', () => {
+            // Check if Firebase is available
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                console.log('🔥 Firebase loaded successfully');
+                
+                // Initialize Firebase Auth
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        // User is signed in
+                        currentUser = user;
+                        updateProfileUI(user);
+                        profileButton.style.display = 'block';
+                        console.log('✅ User signed in:', user.displayName);
+                    } else {
+                        // No user is signed in, redirect to login
+                        console.log('❌ No user signed in, redirecting to login');
+                        window.location.href = 'login.html';
+                    }
+                });
+            } else {
+                console.log('⚠️ Firebase not loaded, running in demo mode');
+                // Demo mode - show profile button but don't redirect
+                profileButton.style.display = 'block';
+                profileName.textContent = 'Demo User';
+                profileEmail.textContent = 'demo@example.com';
+            }
+        });
+        
+        // Update Profile UI with user data
+        function updateProfileUI(user) {
+            if (user.photoURL) {
+                profilePhoto.src = user.photoURL;
+            }
+            profileName.textContent = user.displayName || 'User';
+            profileEmail.textContent = user.email || 'user@example.com';
+        }
+        
+        // Toggle profile dropdown
+        profileButton.addEventListener('click', () => {
+            profileDropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+        
+        // Logout functionality
+        logoutButton.addEventListener('click', () => {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut().then(() => {
+                    console.log('🚪 User signed out');
+                    // Firebase auth state change will handle redirect
+                }).catch((error) => {
+                    console.error('❌ Logout error:', error);
+                });
+            } else {
+                alert('Demo mode - logout would normally sign you out');
+            }
+        });
+        
+        console.log('🔥 Profile management initialized (Live Server compatible)');
+    </script>
+</body>
+</html>

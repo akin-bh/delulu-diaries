@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delulu Diaries ✨</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .profile-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+        }
+        
+        .profile-dropdown {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            min-width: 280px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .title {
+            font-size: 3rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- PROFILE BUTTON (SUPER SIMPLE) -->
+    <button id="profileBtn" class="profile-button">👤 Profile</button>
+    
+    <!-- PROFILE DROPDOWN -->
+    <div id="profileDropdown" class="profile-dropdown">
+        <h3>Profile Menu</h3>
+        <p>👤 User: Test User</p>
+        <p>📧 Email: test@example.com</p>
+        <br>
+        <button onclick="alert('Logout clicked!')" style="background: #ff6b6b; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+            🚪 Sign Out
+        </button>
+        <button onclick="closeProfile()" style="background: #ccc; color: black; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px;">
+            ❌ Close
+        </button>
+    </div>
+
+    <div class="container">
+        <h1 class="title">✨ Delulu Diaries ✨</h1>
+        <p class="subtitle">Your safe space to be absolutely delulu and share your main character moments 💖</p>
+        
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
+            <h2 style="color: white; margin-bottom: 20px;">How are we feeling today? 🌈</h2>
+            <textarea placeholder="Spill the tea... what's your vibe today? ☕️✨" style="width: 100%; padding: 15px; border-radius: 15px; border: none; font-size: 16px; min-height: 100px;"></textarea>
+            <br><br>
+            <button style="background: #ff69b4; color: white; padding: 15px 30px; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">Post My Vibe ✨</button>
+        </div>
+    </div>
+
+    <script>
+        // Super simple profile toggle
+        document.getElementById('profileBtn').onclick = function() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        };
+        
+        function closeProfile() {
+            document.getElementById('profileDropdown').style.display = 'none';
+        }
+        
+        // Close when clicking outside
+        document.onclick = function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.getElementById('profileBtn');
+            if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>

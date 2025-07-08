@@ -1,0 +1,622 @@
+/* Delulu Diaries - Gen Z Themed Styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+.header-content {
+    position: relative;
+}
+
+/* Profile Section Styles */
+/* Profile Section Styles */
+.user-profile {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 99999 !important;
+    /* Temporary: Make it more visible */
+    background: rgba(255, 0, 0, 0.8) !important;
+    border: 5px solid yellow !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+}
+
+.profile-container {
+    position: relative;
+}
+
+.profile-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.profile-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.user-photo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.user-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.profile-arrow {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 250px;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.profile-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-dropdown-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dropdown-user-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+}
+
+.dropdown-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdown-user-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.dropdown-user-email {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.profile-dropdown-actions {
+    padding: 12px;
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #ff5252, #ff4444);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.logout-icon {
+    font-size: 1rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Mood Input Section */
+.mood-input-section {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mood-input-section h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#moodInput {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 80px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+#moodInput:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+    background: white;
+}
+
+.char-counter {
+    position: absolute;
+    bottom: -25px;
+    right: 5px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Preset Mood Buttons */
+.preset-moods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.mood-btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mood-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.mood-btn.slay {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+}
+
+.mood-btn.goofy {
+    background: linear-gradient(45deg, #4ecdc4, #44a08d);
+}
+
+.mood-btn.delulu {
+    background: linear-gradient(45deg, #ff69b4, #ff1493);
+}
+
+.mood-btn.main-character {
+    background: linear-gradient(45deg, #ffd700, #ffb347);
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Mood Posts Section */
+.mood-posts-section {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mood-posts-section h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mood-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.no-posts {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 30px;
+}
+
+.mood-post {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #ff69b4;
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.mood-post:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.post-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.post-user-photo {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.post-user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.post-time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.mood-post .mood-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.mood-post .mood-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.delete-post-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.delete-post-btn:hover {
+    background: rgba(255, 107, 107, 0.1);
+    transform: scale(1.1);
+}
+
+.mood-tag {
+    background: rgba(255, 105, 180, 0.1);
+    color: #ff69b4;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .title {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .preset-moods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .mood-btn {
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+    
+    .user-profile {
+        position: static;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .user-name {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-profile {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+
+    .profile-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .user-photo {
+        width: 28px;
+        height: 28px;
+    }
+
+    .user-name {
+        display: none; /* Hide name on mobile to save space */
+    }
+
+    .profile-dropdown {
+        right: -10px;
+        min-width: 200px;
+        max-width: calc(100vw - 20px);
+    }
+
+    .profile-dropdown-header {
+        padding: 15px;
+    }
+
+    .dropdown-user-photo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .dropdown-user-name {
+        font-size: 0.9rem;
+    }
+
+    .dropdown-user-email {
+        font-size: 0.8rem;
+    }
+
+    .title {
+        font-size: 2rem;
+        margin-top: 60px; /* Add space for profile button */
+    }
+
+    .header-content {
+        padding-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-dropdown {
+        right: -5px;
+        min-width: 180px;
+    }
+
+    .profile-dropdown-header {
+        padding: 12px;
+    }
+
+    .dropdown-user-photo {
+        width: 36px;
+        height: 36px;
+    }
+
+    .logout-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+/* PWA Install Button */
+.install-prompt {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1000;
+}
+
+.install-prompt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    margin: 0;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+}

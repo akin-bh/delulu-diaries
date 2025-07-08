@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff69b4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#gradient)" stroke="#fff" stroke-width="16"/>
+  
+  <!-- Heart shape -->
+  <path d="M256 380 L200 324 C160 284 160 220 200 180 C220 160 240 160 256 180 C272 160 292 160 312 180 C352 220 352 284 312 324 Z" fill="#fff" opacity="0.9"/>
+  
+  <!-- Sparkles -->
+  <circle cx="360" cy="150" r="12" fill="#fff" opacity="0.8"/>
+  <circle cx="380" cy="200" r="8" fill="#fff" opacity="0.6"/>
+  <circle cx="120" cy="180" r="10" fill="#fff" opacity="0.7"/>
+  <circle cx="140" cy="350" r="12" fill="#fff" opacity="0.8"/>
+  <circle cx="100" cy="320" r="8" fill="#fff" opacity="0.6"/>
+  <circle cx="400" cy="320" r="10" fill="#fff" opacity="0.7"/>
+  
+  <!-- Stars -->
+  <path d="M420 280 L425 295 L440 295 L428 305 L433 320 L420 313 L407 320 L412 305 L400 295 L415 295 Z" fill="#fff" opacity="0.6"/>
+  <path d="M90 100 L95 115 L110 115 L98 125 L103 140 L90 133 L77 140 L82 125 L70 115 L85 115 Z" fill="#fff" opacity="0.7"/>
+  <path d="M450 120 L455 135 L470 135 L458 145 L463 160 L450 153 L437 160 L442 145 L430 135 L445 135 Z" fill="#fff" opacity="0.6"/>
+  
+  <!-- Additional decorative elements -->
+  <circle cx="180" cy="120" r="6" fill="#fff" opacity="0.5"/>
+  <circle cx="350" cy="400" r="8" fill="#fff" opacity="0.6"/>
+  <circle cx="80" cy="250" r="6" fill="#fff" opacity="0.5"/>
+</svg>
