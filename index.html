@@ -12,7 +12,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Additional Styles -->
+    <!-- Login Section Styles -->
     <style>
         .login-section {
             position: fixed;
@@ -25,6 +25,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
         }
         
@@ -121,32 +129,34 @@
     </style>
 </head>
 <body>
-    <!-- Login Section -->
-    <div id="loginSection" class="login-section">
-        <div class="login-card">
-            <h1 class="login-title">✨ Welcome to Delulu Diaries ✨</h1>
-            <p class="login-subtitle">Sign in to start sharing your delulu moments!</p>
-            
-            <button id="googleLoginBtn" class="google-login-btn">
-                <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Sign in with Google
-            </button>
-            
-            <div id="loginLoading" class="loading">
-                <div class="loading-spinner"></div>
-                <p>Signing you in...</p>
+    <!-- Login Section (shown when not authenticated) -->
+    <div id="loginSection" class="login-section" style="display: none;">
+        <div class="login-container">
+            <div class="login-card">
+                <h1 class="login-title">✨ Welcome to Delulu Diaries ✨</h1>
+                <p class="login-subtitle">Sign in to start sharing your delulu moments!</p>
+                
+                <button id="googleLoginBtn" class="google-login-btn">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+                
+                <div id="loginLoading" class="loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Signing you in...</p>
+                </div>
+                
+                <div id="loginError" class="error-message"></div>
             </div>
-            
-            <div id="loginError" class="error-message"></div>
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- Main App (shown when authenticated) -->
     <div id="app" style="display: none;">
         <!-- Header -->
         <header class="header">
@@ -155,7 +165,7 @@
                     <h1 class="logo">Delulu Diaries ✨</h1>
                     <div class="header-actions">
                         <!-- User Profile -->
-                        <div id="userProfile" class="user-profile">
+                        <div id="userProfile" class="user-profile" style="display: none;">
                             <button id="profileBtn" class="profile-btn">
                                 <img id="userPhoto" class="user-photo" src="" alt="User">
                                 <span id="userName" class="user-name"></span>
@@ -216,6 +226,15 @@
         </main>
     </div>
 
+    <!-- PWA Install Button -->
+    <div id="installBanner" class="install-banner" style="display: none;">
+        <div class="install-content">
+            <span class="install-text">📱 Install Delulu Diaries!</span>
+            <button id="installBtn" class="install-btn">Install</button>
+            <button id="closeBanner" class="close-banner">×</button>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -267,10 +286,6 @@
                 if (user) {
                     console.log('✅ User authenticated:', user.displayName);
                     currentUser = user;
-                    
-                    // Refresh token periodically to prevent auto-logout
-                    refreshTokenPeriodically();
-                    
                     showApp();
                 } else {
                     console.log('❌ User not authenticated');
@@ -278,30 +293,6 @@
                     showLogin();
                 }
             });
-        }
-
-        // Refresh token periodically to prevent auto-logout
-        function refreshTokenPeriodically() {
-            if (currentUser) {
-                // Refresh token every 45 minutes (Firebase tokens expire after 1 hour)
-                const refreshInterval = 45 * 60 * 1000; // 45 minutes
-                
-                setTimeout(() => {
-                    if (currentUser) {
-                        currentUser.getIdToken(true) // Force refresh
-                            .then((token) => {
-                                console.log('🔄 Token refreshed successfully');
-                                // Schedule next refresh
-                                refreshTokenPeriodically();
-                            })
-                            .catch((error) => {
-                                console.error('❌ Token refresh failed:', error);
-                                // If token refresh fails, user might need to re-login
-                                showNotification('Session expired. Please log in again.', 'warning');
-                            });
-                    }
-                }, refreshInterval);
-            }
         }
 
         // Show login section
@@ -432,33 +423,13 @@
             });
         }
 
-        // Check if user is still authenticated
-        async function checkUserAuth() {
-            if (!currentUser) {
-                showNotification('Please log in to continue', 'warning');
-                showLogin();
-                return false;
-            }
-            
-            try {
-                // Try to get fresh token to verify user is still valid
-                await currentUser.getIdToken(true);
-                return true;
-            } catch (error) {
-                console.error('❌ User auth check failed:', error);
-                showNotification('Session expired. Please log in again.', 'warning');
-                showLogin();
-                return false;
-            }
-        }
-
         // Submit mood
         async function submitMood() {
             const moodInput = document.getElementById('moodInput');
             const submitBtn = document.getElementById('submitMood');
             
-            // Check if user is still authenticated
-            if (!(await checkUserAuth())) {
+            if (!currentUser) {
+                showNotification('Please log in to post a mood', 'warning');
                 return;
             }
 
@@ -472,6 +443,9 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Posting...';
 
+                console.log('📝 Submitting mood:', moodText);
+                console.log('👤 Current user:', currentUser.uid);
+
                 const moodData = {
                     text: moodText,
                     userId: currentUser.uid,
@@ -482,7 +456,11 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
+                console.log('📊 Mood data:', moodData);
+
                 await db.collection('moods').add(moodData);
+
+                console.log('✅ Mood posted successfully');
 
                 moodInput.value = '';
                 document.getElementById('charCount').textContent = '0';
@@ -492,14 +470,17 @@
 
             } catch (error) {
                 console.error('❌ Error posting mood:', error);
+                console.error('Error details:', error.message);
+                console.error('Error code:', error.code);
                 
-                // Check if it's an auth error
-                if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-                    showNotification('Session expired. Please log in again.', 'warning');
-                    showLogin();
-                } else {
-                    showNotification('Failed to post mood. Please try again.', 'error');
+                let errorMessage = 'Failed to post mood. Please try again.';
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Permission denied. Please check your authentication.';
+                } else if (error.code === 'unavailable') {
+                    errorMessage = 'Service temporarily unavailable. Please try again.';
                 }
+                
+                showNotification(errorMessage, 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Post Vibe ✨';
@@ -511,6 +492,8 @@
             if (!currentUser) return;
 
             try {
+                console.log('📚 Loading moods for user:', currentUser.uid);
+
                 const snapshot = await db.collection('moods')
                     .where('userId', '==', currentUser.uid)
                     .orderBy('timestamp', 'desc')
@@ -524,6 +507,8 @@
                     postsContainer.innerHTML = '<div class="no-posts">No moods yet! Share your first vibe ✨</div>';
                     return;
                 }
+
+                console.log('📊 Found', snapshot.size, 'moods');
 
                 snapshot.forEach((doc) => {
                     const mood = doc.data();
@@ -544,13 +529,12 @@
             } catch (error) {
                 console.error('❌ Error loading moods:', error);
                 
-                // Check if it's an auth error
-                if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-                    showNotification('Session expired. Please log in again.', 'warning');
-                    showLogin();
-                } else {
-                    document.getElementById('moodPosts').innerHTML = '<div class="no-posts">Error loading posts. Please refresh the page.</div>';
+                let errorMessage = 'Error loading posts. Please refresh the page.';
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Permission denied. Please check your authentication.';
                 }
+                
+                document.getElementById('moodPosts').innerHTML = `<div class="no-posts">${errorMessage}</div>`;
             }
         }
 
@@ -600,49 +584,6 @@
                 }, 300);
             }, 3000);
         }
-
-        // Handle page visibility changes to refresh auth
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && currentUser) {
-                console.log('👁️ Page visible, checking auth status...');
-                // Refresh token when user returns to tab
-                currentUser.getIdToken(true)
-                    .then(() => {
-                        console.log('🔄 Token refreshed on visibility change');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Token refresh failed on visibility change:', error);
-                        showNotification('Session expired. Please log in again.', 'warning');
-                        showLogin();
-                    });
-            }
-        });
-
-        // Add user activity tracking to keep session active
-        let lastActivity = Date.now();
-        
-        function trackUserActivity() {
-            lastActivity = Date.now();
-        }
-        
-        // Track various user activities
-        ['click', 'keypress', 'scroll', 'touchstart'].forEach(eventType => {
-            document.addEventListener(eventType, trackUserActivity);
-        });
-
-        // Check for inactivity and refresh token if user is active
-        setInterval(() => {
-            if (currentUser && (Date.now() - lastActivity) < 30 * 60 * 1000) { // 30 minutes
-                // User is active, refresh token proactively
-                currentUser.getIdToken(true)
-                    .then(() => {
-                        console.log('🔄 Proactive token refresh for active user');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Proactive token refresh failed:', error);
-                    });
-            }
-        }, 30 * 60 * 1000); // Check every 30 minutes
 
         // Start the app
         document.addEventListener('DOMContentLoaded', initFirebase);
