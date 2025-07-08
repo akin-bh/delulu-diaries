@@ -439,7 +439,9 @@
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                // Use relative path for service worker to work on both local and GitHub Pages
+                const swPath = window.location.pathname.includes('/delulu-diaries/') ? '/delulu-diaries/sw.js' : './sw.js';
+                navigator.serviceWorker.register(swPath)
                     .then((registration) => {
                         console.log('🔧 Service Worker registered:', registration);
                     })
@@ -449,8 +451,9 @@
             });
         }
         
-        // Show profile button immediately (for Live Server compatibility)
+        // Show profile button and install button immediately (for Live Server compatibility)
         profileButton.style.display = 'block';
+        installButton.style.display = 'block';
         
         // Firebase Auth State Management with error handling
         let currentUser = null;

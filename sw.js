@@ -1,13 +1,13 @@
 // Delulu Diaries - Service Worker
 const CACHE_NAME = 'delulu-diaries-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './login.html',
-  './manifest.json',
-  './favicon.svg',
-  './icon-192x192.svg',
-  './icon-512x512.svg',
+  '/delulu-diaries/',
+  '/delulu-diaries/index.html',
+  '/delulu-diaries/login.html',
+  '/delulu-diaries/manifest.json',
+  '/delulu-diaries/favicon.svg',
+  '/delulu-diaries/icon-192x192.svg',
+  '/delulu-diaries/icon-512x512.svg',
   'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
   'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
