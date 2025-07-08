@@ -58,14 +58,13 @@ class LoginManager {
 
             localStorage.setItem('deluluUser', JSON.stringify(userInfo));
 
-            // Show personalized welcome message
-            const firstName = user.displayName.split(' ')[0]; // Get first name
+            // Show success message briefly
+            const firstName = user.displayName.split(' ')[0];
             this.showNotification(`Welcome ${firstName}! 🎉✨`, 'success');
 
-            // Redirect to main app immediately after a short delay
-            setTimeout(() => {
-                this.redirectToApp();
-            }, 500); // Reduced delay to minimize auth state issues
+            // Redirect immediately after success
+            console.log('🏠 Redirecting to main app...');
+            window.location.href = 'index.html';
 
         } catch (error) {
             console.error('❌ Error signing in:', error);
