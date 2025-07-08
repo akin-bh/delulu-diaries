@@ -2,6 +2,8 @@
 
 A Gen Z themed Progressive Web App for sharing your daily vibes and delulu moments!
 
+https://akin-bh.github.io/delulu-diaries/
+
 ## Features
 
 - 🎨 **Gen Z Aesthetic**: Vibrant gradients, modern UI, and fun emojis
