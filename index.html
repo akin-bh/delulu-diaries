@@ -515,6 +515,13 @@
                     // Valid Google user is authenticated
                     currentUser = user;
                     console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
+                    
+                    // Clear ALL pending auth timeouts since we have a valid user
+                    clearTimeout(authCheckTimeout);
+                    if (window.authSafetyTimeout) {
+                        clearTimeout(window.authSafetyTimeout);
+                    }
+                    
                     updateProfileUI(user);
                     profileButton.style.display = 'block';
                     loadMoods();
@@ -527,13 +534,16 @@
                 }
             });
             
-            // Safety timeout - if no auth state change in 3 seconds, redirect
-            setTimeout(() => {
+            // Safety timeout - if no auth state change in 5 seconds, redirect
+            const safetyTimeout = setTimeout(() => {
                 if (!authStateReady || !currentUser) {
                     console.error('⏰ Auth timeout - no user found, redirecting to login');
                     redirectToLogin();
                 }
-            }, 3000);
+            }, 5000);
+            
+            // Store timeout reference so we can clear it if auth succeeds
+            window.authSafetyTimeout = safetyTimeout;
         }
         
         // Initialize when DOM is ready
@@ -546,11 +556,13 @@
             
             if (isPWA) {
                 console.log('🔍 Running as PWA - extra auth checks enabled');
-                // In PWA mode, be extra strict about authentication
+                // In PWA mode, be extra strict about authentication but give more time
                 authCheckTimeout = setTimeout(() => {
-                    console.error('⏰ PWA mode - no Firebase auth detected, redirecting');
-                    window.location.replace('login.html');
-                }, 1000);
+                    if (!authStateReady || !currentUser) {
+                        console.error('⏰ PWA mode - no Firebase auth detected, redirecting');
+                        window.location.replace('login.html');
+                    }
+                }, 5000);
             }
             
             // Hide profile button initially
@@ -568,14 +580,6 @@
             
             if (!user) {
                 console.log('❌ No user provided to updateProfileUI');
-                redirectToLogin();
-                return;
-            }
-            
-            // Ensure this is a real Google user
-            if (!user.uid || !user.email) {
-                console.log('❌ Invalid user data - missing uid or email');
-                redirectToLogin();
                 return;
             }
             
@@ -591,7 +595,7 @@
             
             // Update name and email - only from Google user
             profileName.textContent = user.displayName || 'Google User';
-            profileEmail.textContent = user.email;
+            profileEmail.textContent = user.email || 'No email';
             
             console.log('✅ Profile UI updated successfully');
         }
@@ -687,7 +691,7 @@
             if (!currentUser || !authStateReady) {
                 console.log('❌ No authenticated user for mood submission');
                 alert('You need to be signed in to share your vibe! 🔐');
-                redirectToLogin();
+                // Don't redirect here - user should stay on the page
                 return;
             }
             
@@ -705,7 +709,7 @@
         function saveMoodToFirestore(text) {
             if (!currentUser) {
                 console.log('❌ No user authenticated - cannot save mood');
-                redirectToLogin();
+                alert('Please sign in first to save your mood! 🔐');
                 return;
             }
             
