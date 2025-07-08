@@ -47,6 +47,16 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Don't cache authentication-related requests
+  if (event.request.url.includes('login') || 
+      event.request.url.includes('auth') ||
+      event.request.url.includes('firebase') ||
+      event.request.url.includes('google')) {
+    // Always fetch from network for auth requests
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -153,6 +163,35 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  
+  // Handle auth cache clearing
+  if (event.data && event.data.type === 'CLEAR_AUTH_CACHE') {
+    console.log('🧹 Clearing auth-related cache...');
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            return caches.open(cacheName).then((cache) => {
+              return cache.keys().then((requests) => {
+                return Promise.all(
+                  requests.map((request) => {
+                    // Remove cached responses for login and auth-related requests
+                    if (request.url.includes('login') || 
+                        request.url.includes('auth') ||
+                        request.url.includes('firebase') ||
+                        request.url.includes('google')) {
+                      console.log('🧹 Removing cached auth request:', request.url);
+                      return cache.delete(request);
+                    }
+                  })
+                );
+              });
+            });
+          })
+        );
+      })
+    );
   }
 });
 
