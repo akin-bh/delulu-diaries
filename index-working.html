@@ -242,19 +242,11 @@
                 googleProvider.addScope('profile');
                 googleProvider.addScope('email');
                 
-                // Set persistence to LOCAL with proper error handling
-                auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                    .then(() => {
-                        console.log('✅ Firebase persistence set to LOCAL');
-                        setupAuth();
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error setting persistence:', error);
-                        // Fallback: setup auth without persistence
-                        setupAuth();
-                    });
+                // Set persistence
+                auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 
                 console.log('✅ Firebase initialized');
+                setupAuth();
             } else {
                 console.log('⏳ Waiting for Firebase...');
                 setTimeout(initFirebase, 100);
@@ -267,10 +259,6 @@
                 if (user) {
                     console.log('✅ User authenticated:', user.displayName);
                     currentUser = user;
-                    
-                    // Refresh token periodically to prevent auto-logout
-                    refreshTokenPeriodically();
-                    
                     showApp();
                 } else {
                     console.log('❌ User not authenticated');
@@ -278,30 +266,6 @@
                     showLogin();
                 }
             });
-        }
-
-        // Refresh token periodically to prevent auto-logout
-        function refreshTokenPeriodically() {
-            if (currentUser) {
-                // Refresh token every 45 minutes (Firebase tokens expire after 1 hour)
-                const refreshInterval = 45 * 60 * 1000; // 45 minutes
-                
-                setTimeout(() => {
-                    if (currentUser) {
-                        currentUser.getIdToken(true) // Force refresh
-                            .then((token) => {
-                                console.log('🔄 Token refreshed successfully');
-                                // Schedule next refresh
-                                refreshTokenPeriodically();
-                            })
-                            .catch((error) => {
-                                console.error('❌ Token refresh failed:', error);
-                                // If token refresh fails, user might need to re-login
-                                showNotification('Session expired. Please log in again.', 'warning');
-                            });
-                    }
-                }, refreshInterval);
-            }
         }
 
         // Show login section
@@ -432,35 +396,12 @@
             });
         }
 
-        // Check if user is still authenticated
-        async function checkUserAuth() {
-            if (!currentUser) {
-                showNotification('Please log in to continue', 'warning');
-                showLogin();
-                return false;
-            }
-            
-            try {
-                // Try to get fresh token to verify user is still valid
-                await currentUser.getIdToken(true);
-                return true;
-            } catch (error) {
-                console.error('❌ User auth check failed:', error);
-                showNotification('Session expired. Please log in again.', 'warning');
-                showLogin();
-                return false;
-            }
-        }
-
         // Submit mood
         async function submitMood() {
             const moodInput = document.getElementById('moodInput');
             const submitBtn = document.getElementById('submitMood');
             
-            // Check if user is still authenticated
-            if (!(await checkUserAuth())) {
-                return;
-            }
+            if (!currentUser) return;
 
             const moodText = moodInput.value.trim();
             if (!moodText) {
@@ -492,14 +433,7 @@
 
             } catch (error) {
                 console.error('❌ Error posting mood:', error);
-                
-                // Check if it's an auth error
-                if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-                    showNotification('Session expired. Please log in again.', 'warning');
-                    showLogin();
-                } else {
-                    showNotification('Failed to post mood. Please try again.', 'error');
-                }
+                showNotification('Failed to post mood. Please try again.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Post Vibe ✨';
@@ -543,14 +477,7 @@
 
             } catch (error) {
                 console.error('❌ Error loading moods:', error);
-                
-                // Check if it's an auth error
-                if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-                    showNotification('Session expired. Please log in again.', 'warning');
-                    showLogin();
-                } else {
-                    document.getElementById('moodPosts').innerHTML = '<div class="no-posts">Error loading posts. Please refresh the page.</div>';
-                }
+                document.getElementById('moodPosts').innerHTML = '<div class="no-posts">Error loading posts. Please refresh the page.</div>';
             }
         }
 
@@ -600,49 +527,6 @@
                 }, 300);
             }, 3000);
         }
-
-        // Handle page visibility changes to refresh auth
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && currentUser) {
-                console.log('👁️ Page visible, checking auth status...');
-                // Refresh token when user returns to tab
-                currentUser.getIdToken(true)
-                    .then(() => {
-                        console.log('🔄 Token refreshed on visibility change');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Token refresh failed on visibility change:', error);
-                        showNotification('Session expired. Please log in again.', 'warning');
-                        showLogin();
-                    });
-            }
-        });
-
-        // Add user activity tracking to keep session active
-        let lastActivity = Date.now();
-        
-        function trackUserActivity() {
-            lastActivity = Date.now();
-        }
-        
-        // Track various user activities
-        ['click', 'keypress', 'scroll', 'touchstart'].forEach(eventType => {
-            document.addEventListener(eventType, trackUserActivity);
-        });
-
-        // Check for inactivity and refresh token if user is active
-        setInterval(() => {
-            if (currentUser && (Date.now() - lastActivity) < 30 * 60 * 1000) { // 30 minutes
-                // User is active, refresh token proactively
-                currentUser.getIdToken(true)
-                    .then(() => {
-                        console.log('🔄 Proactive token refresh for active user');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Proactive token refresh failed:', error);
-                    });
-            }
-        }, 30 * 60 * 1000); // Check every 30 minutes
 
         // Start the app
         document.addEventListener('DOMContentLoaded', initFirebase);
