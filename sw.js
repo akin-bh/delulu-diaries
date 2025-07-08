@@ -47,12 +47,11 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  // Don't cache authentication-related requests
-  if (event.request.url.includes('login') || 
-      event.request.url.includes('auth') ||
-      event.request.url.includes('firebase') ||
-      event.request.url.includes('google')) {
-    // Always fetch from network for auth requests
+  // Only block caching for login page specifically, not Firebase auth APIs
+  if (event.request.url.includes('login.html') || 
+      event.request.url.includes('login?') ||
+      event.request.url.includes('logout')) {
+    // Always fetch from network for login/logout pages
     event.respondWith(fetch(event.request));
     return;
   }
@@ -167,7 +166,7 @@ self.addEventListener('message', (event) => {
   
   // Handle auth cache clearing
   if (event.data && event.data.type === 'CLEAR_AUTH_CACHE') {
-    console.log('🧹 Clearing auth-related cache...');
+    console.log('🧹 Clearing login page cache...');
     event.waitUntil(
       caches.keys().then((cacheNames) => {
         return Promise.all(
@@ -176,12 +175,11 @@ self.addEventListener('message', (event) => {
               return cache.keys().then((requests) => {
                 return Promise.all(
                   requests.map((request) => {
-                    // Remove cached responses for login and auth-related requests
-                    if (request.url.includes('login') || 
-                        request.url.includes('auth') ||
-                        request.url.includes('firebase') ||
-                        request.url.includes('google')) {
-                      console.log('🧹 Removing cached auth request:', request.url);
+                    // Only remove cached login page, not Firebase APIs
+                    if (request.url.includes('login.html') || 
+                        request.url.includes('login?') ||
+                        request.url.includes('logout')) {
+                      console.log('🧹 Removing cached login page:', request.url);
                       return cache.delete(request);
                     }
                   })

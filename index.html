@@ -377,24 +377,6 @@
 
     <!-- Scripts -->
     <script>
-        // IMMEDIATE AUTHENTICATION CHECK - Clear any cached sessions
-        console.log('🔍 Starting immediate auth check...');
-        
-        // Clear any localStorage that might contain cached user data
-        try {
-            localStorage.clear();
-            sessionStorage.clear();
-            console.log('🧹 Cleared all local storage');
-        } catch (error) {
-            console.log('⚠️ Could not clear storage:', error);
-        }
-        
-        // Force immediate redirect if no Firebase auth detected
-        let authCheckTimeout = setTimeout(() => {
-            console.error('⏰ No Firebase auth detected within 2 seconds - redirecting');
-            window.location.replace('login.html');
-        }, 2000);
-        
         // Profile UI Elements
         const profileButton = document.getElementById('profileButton');
         const profileDropdown = document.getElementById('profileDropdown');
@@ -403,6 +385,12 @@
         const profileEmail = document.getElementById('profileEmail');
         const logoutButton = document.getElementById('logoutButton');
         const installButton = document.getElementById('installButton');
+        
+        // Force immediate redirect if no Firebase auth detected
+        let authCheckTimeout = setTimeout(() => {
+            console.error('⏰ No Firebase auth detected within 3 seconds - redirecting');
+            window.location.replace('login.html');
+        }, 3000);
         
         // PWA Installation
         let deferredPrompt;
@@ -518,50 +506,25 @@
             console.log('🔥 Initializing Firebase Auth...');
             clearTimeout(authCheckTimeout);
             
-            // Force sign out any existing session first
-            firebase.auth().signOut().then(() => {
-                console.log('🧹 Cleared any existing Firebase session');
+            // Set up auth state listener directly without forcing signout
+            firebase.auth().onAuthStateChanged((user) => {
+                console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
+                authStateReady = true;
                 
-                // Now set up auth state listener
-                firebase.auth().onAuthStateChanged((user) => {
-                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
-                    authStateReady = true;
-                    
-                    if (user && user.uid && user.email) {
-                        // Valid Google user is authenticated
-                        currentUser = user;
-                        console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
-                        updateProfileUI(user);
-                        profileButton.style.display = 'block';
-                        loadMoods();
-                    } else {
-                        // No user or invalid user - redirect to login
-                        console.log('❌ No valid user authenticated - redirecting to login');
-                        currentUser = null;
-                        profileButton.style.display = 'none';
-                        redirectToLogin();
-                    }
-                });
-            }).catch((error) => {
-                console.log('⚠️ Could not clear existing session:', error);
-                // Continue with auth setup anyway
-                firebase.auth().onAuthStateChanged((user) => {
-                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
-                    authStateReady = true;
-                    
-                    if (user && user.uid && user.email) {
-                        currentUser = user;
-                        console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
-                        updateProfileUI(user);
-                        profileButton.style.display = 'block';
-                        loadMoods();
-                    } else {
-                        console.log('❌ No valid user authenticated - redirecting to login');
-                        currentUser = null;
-                        profileButton.style.display = 'none';
-                        redirectToLogin();
-                    }
-                });
+                if (user && user.uid && user.email) {
+                    // Valid Google user is authenticated
+                    currentUser = user;
+                    console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
+                    updateProfileUI(user);
+                    profileButton.style.display = 'block';
+                    loadMoods();
+                } else {
+                    // No user or invalid user - redirect to login
+                    console.log('❌ No valid user authenticated - redirecting to login');
+                    currentUser = null;
+                    profileButton.style.display = 'none';
+                    redirectToLogin();
+                }
             });
             
             // Safety timeout - if no auth state change in 3 seconds, redirect
