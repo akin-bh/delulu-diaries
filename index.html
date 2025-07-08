@@ -460,6 +460,11 @@
         
         // Wait for Firebase to load, then initialize
         window.addEventListener('load', () => {
+            // Check if this is a PWA or if Firebase is available
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone || 
+                         document.referrer.includes('android-app://');
+            
             // Check if Firebase is available
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 console.log('🔥 Firebase loaded successfully');
@@ -473,19 +478,24 @@
                         profileButton.style.display = 'block';
                         console.log('✅ User signed in:', user.displayName);
                     } else {
-                        // No user is signed in - FOR PWA: Don't redirect, just show demo mode
-                        console.log('❌ No user signed in, running in demo mode for PWA');
-                        profileButton.style.display = 'block';
-                        profileName.textContent = 'PWA User';
-                        profileEmail.textContent = 'pwa@deluludiaries.app';
+                        // No user is signed in - redirect to login
+                        console.log('❌ No user signed in, redirecting to login');
+                        currentUser = null;
+                        window.location.href = 'login.html';
                     }
                 });
             } else {
                 console.log('⚠️ Firebase not loaded, running in demo mode');
-                // Demo mode - show profile button but don't redirect
+                // Demo mode - show profile button but indicate demo mode
                 profileButton.style.display = 'block';
                 profileName.textContent = 'Demo User';
                 profileEmail.textContent = 'demo@example.com';
+                currentUser = null;
+                
+                // If this is a PWA, show a notice
+                if (isPWA) {
+                    console.log('📱 Running as PWA in demo mode');
+                }
             }
         });
         
@@ -512,15 +522,23 @@
         
         // Logout functionality
         logoutButton.addEventListener('click', () => {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
+            if (typeof firebase !== 'undefined' && firebase.auth && currentUser) {
+                // User is actually signed in with Firebase
                 firebase.auth().signOut().then(() => {
                     console.log('🚪 User signed out');
-                    // Firebase auth state change will handle redirect
+                    // Redirect to login page
+                    window.location.href = 'login.html';
                 }).catch((error) => {
                     console.error('❌ Logout error:', error);
+                    alert('Error signing out. Please try again.');
                 });
             } else {
-                alert('Demo mode - logout would normally sign you out');
+                // Demo mode or no user signed in
+                console.log('🚪 Demo/PWA logout - redirecting to login');
+                // Show confirmation message
+                if (confirm('You are in demo mode. Would you like to go to the login page to sign in properly?')) {
+                    window.location.href = 'login.html';
+                }
             }
         });
         
