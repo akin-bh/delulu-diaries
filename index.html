@@ -19,94 +19,370 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Basic Gen Z Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 100px 20px 20px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .mood-input-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mood-input-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        #moodInput {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .preset-moods {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .mood-btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .mood-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+        
+        .submit-btn {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #45b7d1;
+            transform: translateY(-2px);
+        }
+        
+        .mood-posts-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mood-posts-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .no-posts {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Simple Profile Styles */
+        .user-profile {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .profile-btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+        }
+        
+        .user-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-size: 14px;
+        }
+        
+        .profile-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-width: 250px;
+            display: none;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .dropdown-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        
+        .dropdown-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .dropdown-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+        }
+        
+        .dropdown-item {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        /* PWA Install Button */
+        .install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            transition: all 0.3s ease;
+            display: block !important;
+            font-size: 14px;
+        }
+        
+        .install-button:hover {
+            background: #45b7d1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="logo">Delulu Diaries ✨</h1>
-                <div class="header-actions">
-                    <!-- Install PWA Button -->
-                    <button id="installButton" class="install-btn" style="display: none;">
-                        📱 Install App
-                    </button>
-                    
-                    <!-- User Profile -->
-                    <div id="userProfile" class="user-profile" style="display: none;">
-                        <button id="profileBtn" class="profile-btn">
-                            <img id="userPhoto" class="user-photo" src="" alt="User">
-                            <span id="userName" class="user-name"></span>
-                            <span class="profile-arrow">▼</span>
-                        </button>
-                        <div id="profileDropdown" class="profile-dropdown">
-                            <div class="dropdown-header">
-                                <img id="dropdownUserPhoto" class="dropdown-photo" src="" alt="User">
-                                <div class="dropdown-info">
-                                    <div id="dropdownUserName" class="dropdown-name"></div>
-                                    <div id="dropdownUserEmail" class="dropdown-email"></div>
-                                </div>
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <button id="logoutBtn" class="dropdown-item logout-btn">
-                                🚪 Logout
-                            </button>
-                        </div>
-                    </div>
+    <!-- Simple Profile Button -->
+    <div id="userProfile" class="user-profile" style="display: none;">
+        <button id="profileBtn" class="profile-btn">
+            <img id="userPhoto" class="user-photo" src="" alt="User">
+            <span id="userName" class="user-name"></span>
+            <span class="profile-arrow">▼</span>
+        </button>
+        <div id="profileDropdown" class="profile-dropdown">
+            <div class="dropdown-header">
+                <img id="dropdownUserPhoto" class="dropdown-photo" src="" alt="User">
+                <div class="dropdown-info">
+                    <div id="dropdownUserName" class="dropdown-name"></div>
+                    <div id="dropdownUserEmail" class="dropdown-email"></div>
                 </div>
             </div>
+            <div class="dropdown-divider"></div>
+            <button id="logoutBtn" class="dropdown-item logout-btn">
+                🚪 Logout
+            </button>
         </div>
-    </header>
+    </div>
+    
+    <!-- PWA Install Button -->
+    <button id="installButton" class="install-button">
+        📱 Install App
+    </button>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">✨ Delulu Diaries ✨</h1>
+                <p class="subtitle">Your safe space to be absolutely delulu and share your main character moments 💖</p>
+            </div>
+        </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Mood Input Section -->
-            <div class="mood-input-section">
-                <h2>What's your vibe today? 🌈</h2>
-                <div class="mood-input-container">
-                    <textarea id="moodInput" placeholder="Spill the tea bestie... what's your mood today? ☕️✨" maxlength="500"></textarea>
-                    <div class="input-footer">
-                        <span class="char-counter">
-                            <span id="charCount">0</span>/500
-                        </span>
-                        <button id="submitMood" class="submit-btn">Post Vibe ✨</button>
-                    </div>
-                </div>
-                
-                <!-- Preset Mood Buttons -->
-                <div class="preset-moods">
-                    <h3>Quick Vibes:</h3>
-                    <div class="mood-buttons">
-                        <button class="mood-btn" data-mood="✨">✨ Magical</button>
-                        <button class="mood-btn" data-mood="💖">💖 In Love</button>
-                        <button class="mood-btn" data-mood="🎭">🎭 Dramatic</button>
-                        <button class="mood-btn" data-mood="🌙">🌙 Mysterious</button>
-                        <button class="mood-btn" data-mood="🦋">🦋 Dreamy</button>
-                        <button class="mood-btn" data-mood="👑">👑 Main Character</button>
-                        <button class="mood-btn" data-mood="🌸">🌸 Soft Girl</button>
-                        <button class="mood-btn" data-mood="🔥">🔥 Iconic</button>
-                    </div>
+        <!-- Mood Input Section -->
+        <section class="mood-input-section">
+            <h2>How are we feeling today? 🌈</h2>
+            <div class="input-group">
+                <textarea 
+                    id="moodInput" 
+                    placeholder="Spill the tea... what's your vibe today? ☕️✨"
+                    maxlength="500"
+                    rows="3"
+                ></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span>/500
                 </div>
             </div>
             
-            <!-- Mood Posts Section -->
-            <div class="mood-posts-section">
-                <h2>Your Delulu Chronicles 📖</h2>
-                <div id="moodPosts" class="mood-posts">
-                    <div class="no-posts">
-                        No moods yet! Share your first vibe ✨
-                    </div>
+            <!-- Preset Mood Buttons -->
+            <div class="preset-moods">
+                <button class="mood-btn" data-mood="✨">✨ Magical</button>
+                <button class="mood-btn" data-mood="💖">💖 In Love</button>
+                <button class="mood-btn" data-mood="🎭">🎭 Dramatic</button>
+                <button class="mood-btn" data-mood="🌙">🌙 Mysterious</button>
+                <button class="mood-btn" data-mood="🦋">🦋 Dreamy</button>
+                <button class="mood-btn" data-mood="👑">👑 Main Character</button>
+                <button class="mood-btn" data-mood="🌸">🌸 Soft Girl</button>
+                <button class="mood-btn" data-mood="🔥">� Iconic</button>
+            </div>
+            
+            <!-- Submit Button -->
+            <button id="submitMood" class="submit-btn">
+                Post My Vibe ✨
+            </button>
+        </section>
+
+        <!-- Mood Posts Display -->
+        <section class="mood-posts-section">
+            <h2>Your Delulu Chronicles 📖</h2>
+            <div id="moodPosts" class="mood-posts">
+                <!-- Posts will be dynamically added here -->
+                <div class="no-posts">
+                    <p>No moods yet! Share your first vibe ✨</p>
                 </div>
             </div>
-        </div>
-    </main>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>Created with love for the Gen Z by the Gen Z 💕</p>
-        </div>
+        <p>Created with love for the Gen Z by the Gen Z 💕</p>
     </footer>
 
     <!-- Firebase SDK -->
@@ -119,9 +395,48 @@
     
     <!-- App Logic -->
     <script src="app.js"></script>
-    
-    <!-- Service Worker Registration -->
+
+    <!-- Authentication Check and App Initialization -->
     <script>
+        // Check authentication immediately
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔍 Checking authentication...');
+            
+            // Hide the main content initially
+            document.body.style.display = 'none';
+            
+            // Wait for Firebase to load
+            const checkFirebase = () => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    console.log('🔥 Firebase loaded, checking auth state...');
+                    
+                    // Check authentication state
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            console.log('✅ User is authenticated:', user.email);
+                            // Show the main content
+                            document.body.style.display = 'block';
+                            // Initialize the app
+                            if (typeof DeluluDiaries !== 'undefined') {
+                                new DeluluDiaries();
+                            }
+                        } else {
+                            console.log('❌ User not authenticated, redirecting to login...');
+                            // Redirect to login page
+                            window.location.href = 'login.html';
+                        }
+                    });
+                } else {
+                    console.log('⏳ Firebase not loaded yet, retrying...');
+                    setTimeout(checkFirebase, 100);
+                }
+            };
+            
+            // Start checking
+            checkFirebase();
+        });
+        
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
