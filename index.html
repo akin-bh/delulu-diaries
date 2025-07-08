@@ -268,19 +268,17 @@
     <!-- Simple Profile Button -->
     <button id="profileButton" class="profile-button">
         👤 Profile
-    </button>
-    
-    <!-- Profile Dropdown -->
-    <div id="profileDropdown" class="profile-dropdown">
-        <div class="profile-info">
-            <img id="profilePhoto" class="profile-photo" src="https://via.placeholder.com/60x60?text=👤" alt="Profile">
-            <div id="profileName" class="profile-name">User Name</div>
-            <div id="profileEmail" class="profile-email">user@example.com</div>
+    </button>        <!-- Profile Dropdown -->
+        <div id="profileDropdown" class="profile-dropdown">
+            <div class="profile-info">
+                <img id="profilePhoto" class="profile-photo" src="" alt="Profile">
+                <div id="profileName" class="profile-name">Loading...</div>
+                <div id="profileEmail" class="profile-email">Please wait...</div>
+            </div>
+            <button id="logoutButton" class="logout-button">
+                🚪 Sign Out
+            </button>
         </div>
-        <button id="logoutButton" class="logout-button">
-            🚪 Sign Out
-        </button>
-    </div>
     
     <!-- PWA Install Button -->
     <button id="installButton" class="install-button">
@@ -455,23 +453,21 @@
         profileButton.style.display = 'none';
         installButton.style.display = 'block';
         
-        // Add immediate auth check - if no Firebase user is found within 5 seconds, redirect
-        setTimeout(() => {
-            if (!currentUser) {
-                console.log('⏰ No authenticated user found after 5 seconds - redirecting to login');
-                window.location.href = 'login.html';
-            }
-        }, 5000);
-        
         // Firebase Auth State Management with error handling
         let currentUser = null;
+        
+        // Redirect to login function
+        function redirectToLogin() {
+            console.log('🚪 Redirecting to login...');
+            window.location.href = 'login.html';
+        }
         
         // Wait for Firebase to load, then initialize
         window.addEventListener('load', () => {
             // Set a timeout to redirect if Firebase doesn't load within 3 seconds
             const redirectTimeout = setTimeout(() => {
                 console.log('⏰ Firebase loading timeout - redirecting to login');
-                window.location.href = 'login.html';
+                redirectToLogin();
             }, 3000);
             
             // Check if Firebase is available
@@ -486,33 +482,32 @@
                         currentUser = user;
                         updateProfileUI(user);
                         profileButton.style.display = 'block';
+                        loadMoods(); // Load user's moods
                         console.log('✅ User signed in:', user.displayName);
                     } else {
                         // No user is signed in - always redirect to login
                         console.log('❌ No user signed in, redirecting to login');
                         currentUser = null;
                         profileButton.style.display = 'none';
-                        // Clear any existing profile data
-                        profileName.textContent = 'Not Signed In';
-                        profileEmail.textContent = 'Please sign in';
-                        window.location.href = 'login.html';
+                        redirectToLogin();
                     }
                 });
             } else {
                 console.log('⚠️ Firebase not loaded, redirecting to login');
                 clearTimeout(redirectTimeout);
-                // No Firebase - redirect to login
-                window.location.href = 'login.html';
+                redirectToLogin();
             }
         });
         
         // Update Profile UI with user data
         function updateProfileUI(user) {
-            if (user.photoURL) {
+            if (user && user.photoURL) {
                 profilePhoto.src = user.photoURL;
+            } else {
+                profilePhoto.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9IiNGRkY1RTQiLz4KPHN2ZyB4PSIxNSIgeT0iMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSI0MCI+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNHB4IiBmaWxsPSIjNjY2NjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+RpDwvdGV4dD4KICA8L3N2Zz4KPC9zdmc+';
             }
-            profileName.textContent = user.displayName || 'User';
-            profileEmail.textContent = user.email || 'user@example.com';
+            profileName.textContent = user.displayName || 'Google User';
+            profileEmail.textContent = user.email || 'No email';
         }
         
         // Toggle profile dropdown
@@ -530,25 +525,24 @@
         // Logout functionality
         logoutButton.addEventListener('click', () => {
             console.log('🚪 Logout button clicked');
-            console.log('Firebase available:', typeof firebase !== 'undefined');
-            console.log('Firebase auth available:', typeof firebase !== 'undefined' && firebase.auth);
-            console.log('Current user:', currentUser);
             
             if (typeof firebase !== 'undefined' && firebase.auth && currentUser) {
                 // User is signed in with Firebase - sign out
                 console.log('🔥 Attempting Firebase signout...');
                 firebase.auth().signOut().then(() => {
                     console.log('✅ Firebase signout successful');
-                    // Firebase auth state change will automatically redirect to login
+                    currentUser = null;
+                    redirectToLogin();
                 }).catch((error) => {
                     console.error('❌ Firebase signout error:', error);
-                    // Force redirect on error
-                    window.location.href = 'login.html';
+                    currentUser = null;
+                    redirectToLogin();
                 });
             } else {
                 // No Firebase or no user - force redirect to login
                 console.log('⚠️ No Firebase auth or no user, forcing redirect to login');
-                window.location.href = 'login.html';
+                currentUser = null;
+                redirectToLogin();
             }
         });
         
@@ -581,9 +575,15 @@
         
         // Submit mood functionality
         submitMoodBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                alert('Please sign in to share your vibe! 🔐');
+                redirectToLogin();
+                return;
+            }
+            
             const moodText = moodInput.value.trim();
             if (moodText) {
-                addMoodPost(moodText);
+                saveMoodToFirestore(moodText);
                 moodInput.value = '';
                 charCount.textContent = '0';
             } else {
@@ -591,8 +591,79 @@
             }
         });
         
+        // Save mood to Firestore
+        function saveMoodToFirestore(text) {
+            if (!currentUser) {
+                console.log('❌ No user authenticated - cannot save mood');
+                redirectToLogin();
+                return;
+            }
+            
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                const db = firebase.firestore();
+                const moodData = {
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName,
+                    userEmail: currentUser.email,
+                    userPhoto: currentUser.photoURL,
+                    text: text,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdAt: new Date()
+                };
+                
+                db.collection('moods').add(moodData)
+                    .then((docRef) => {
+                        console.log('✅ Mood saved to Firestore:', docRef.id);
+                        addMoodPost(text, currentUser);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error saving mood:', error);
+                        alert('Failed to save mood. Please try again! 😢');
+                    });
+            } else {
+                console.log('⚠️ Firestore not available - cannot save mood');
+                alert('Unable to save mood. Please refresh and try again! 🔄');
+            }
+        }
+        
+        // Load moods from Firestore
+        function loadMoods() {
+            if (!currentUser) {
+                console.log('❌ No user authenticated - cannot load moods');
+                return;
+            }
+            
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                const db = firebase.firestore();
+                db.collection('moods')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get()
+                    .then((querySnapshot) => {
+                        const noPostsDiv = document.querySelector('.no-posts');
+                        if (noPostsDiv) {
+                            noPostsDiv.remove();
+                        }
+                        
+                        if (querySnapshot.empty) {
+                            console.log('No moods found for user');
+                            return;
+                        }
+                        
+                        querySnapshot.forEach((doc) => {
+                            const moodData = doc.data();
+                            addMoodPost(moodData.text, currentUser, moodData.createdAt);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error loading moods:', error);
+                    });
+            }
+        }
+        
         // Add mood post to the list
-        function addMoodPost(text) {
+        function addMoodPost(text, user, timestamp) {
             const noPostsDiv = document.querySelector('.no-posts');
             if (noPostsDiv) {
                 noPostsDiv.remove();
@@ -609,13 +680,14 @@
                 border-left: 4px solid #ff69b4;
             `;
             
-            const now = new Date();
+            const now = timestamp ? new Date(timestamp.seconds * 1000) : new Date();
             const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const dateStr = now.toLocaleDateString();
             
             postDiv.innerHTML = `
                 <div style="font-size: 1rem; color: #333; margin-bottom: 10px;">${text}</div>
                 <div style="font-size: 0.8rem; color: #666; text-align: right;">
-                    Posted at ${timeStr} 💖
+                    Posted by ${user ? user.displayName || 'You' : 'You'} on ${dateStr} at ${timeStr} 💖
                 </div>
             `;
             
