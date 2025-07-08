@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delulu Diaries ✨ - Redirecting...</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff69b4">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .redirect-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ff69b4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .message {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-container">
+        <h1 class="title">Delulu Diaries ✨</h1>
+        <p class="subtitle">Your safe space to be absolutely delulu!</p>
+        
+        <div id="status" class="status info">
+            <div class="spinner"></div>
+            <p class="message">Setting up your delulu diary...</p>
+        </div>
+
+        <div id="actions" style="display: none;">
+            <a href="index.html" class="btn">Enter Your Diary ✨</a>
+            <a href="index-FRESH.html" class="btn">Try Fresh Version 🆕</a>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Delulu Diaries - No Firebase Setup');
+        
+        // Show status updates
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = `
+                <div class="spinner"></div>
+                <p class="message">${message}</p>
+            `;
+        }
+
+        // Initialize without Firebase
+        function initializeApp() {
+            updateStatus('✅ No authentication required!', 'success');
+            
+            setTimeout(() => {
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = `
+                    <p class="message">✨ Your delulu diary is ready!</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px; color: #666;">
+                        This version uses localStorage - no login required!
+                    </p>
+                `;
+                
+                document.getElementById('actions').style.display = 'block';
+            }, 1000);
+        }
+
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 3000);
+
+        // Initialize immediately
+        initializeApp();
+    </script>
+</body>
+</html>
