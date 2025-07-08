@@ -377,6 +377,24 @@
 
     <!-- Scripts -->
     <script>
+        // IMMEDIATE AUTHENTICATION CHECK - Clear any cached sessions
+        console.log('🔍 Starting immediate auth check...');
+        
+        // Clear any localStorage that might contain cached user data
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log('🧹 Cleared all local storage');
+        } catch (error) {
+            console.log('⚠️ Could not clear storage:', error);
+        }
+        
+        // Force immediate redirect if no Firebase auth detected
+        let authCheckTimeout = setTimeout(() => {
+            console.error('⏰ No Firebase auth detected within 2 seconds - redirecting');
+            window.location.replace('login.html');
+        }, 2000);
+        
         // Profile UI Elements
         const profileButton = document.getElementById('profileButton');
         const profileDropdown = document.getElementById('profileDropdown');
@@ -437,7 +455,7 @@
             installButton.style.display = 'none';
         });
         
-        // Register Service Worker
+        // Register Service Worker with auth awareness
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 // Use relative path for service worker to work on both local and GitHub Pages
@@ -445,6 +463,13 @@
                 navigator.serviceWorker.register(swPath)
                     .then((registration) => {
                         console.log('🔧 Service Worker registered:', registration);
+                        
+                        // Send message to service worker to clear auth-related cache
+                        if (registration.active) {
+                            registration.active.postMessage({
+                                type: 'CLEAR_AUTH_CACHE'
+                            });
+                        }
                     })
                     .catch((error) => {
                         console.log('❌ Service Worker registration failed:', error);
@@ -465,9 +490,21 @@
             console.log('🚪 Redirecting to login...');
             // Clear any user state
             currentUser = null;
+            authStateReady = false;
             profileButton.style.display = 'none';
-            // Force redirect
-            window.location.replace('login.html');
+            
+            // Clear all storage
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                console.log('🧹 Storage cleared during redirect');
+            } catch (error) {
+                console.log('⚠️ Could not clear storage during redirect:', error);
+            }
+            
+            // Force redirect with cache busting
+            const timestamp = new Date().getTime();
+            window.location.replace(`login.html?t=${timestamp}`);
         }
         
         // Initialize Firebase Auth immediately
@@ -479,40 +516,79 @@
             }
             
             console.log('🔥 Initializing Firebase Auth...');
+            clearTimeout(authCheckTimeout);
             
-            // Set up auth state listener
-            firebase.auth().onAuthStateChanged((user) => {
-                console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
-                authStateReady = true;
+            // Force sign out any existing session first
+            firebase.auth().signOut().then(() => {
+                console.log('🧹 Cleared any existing Firebase session');
                 
-                if (user) {
-                    // User is authenticated
-                    currentUser = user;
-                    console.log('✅ User authenticated:', user.displayName, user.email);
-                    updateProfileUI(user);
-                    profileButton.style.display = 'block';
-                    loadMoods();
-                } else {
-                    // No user - redirect to login
-                    console.log('❌ No user authenticated - redirecting to login');
-                    currentUser = null;
-                    profileButton.style.display = 'none';
-                    redirectToLogin();
-                }
+                // Now set up auth state listener
+                firebase.auth().onAuthStateChanged((user) => {
+                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
+                    authStateReady = true;
+                    
+                    if (user && user.uid && user.email) {
+                        // Valid Google user is authenticated
+                        currentUser = user;
+                        console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
+                        updateProfileUI(user);
+                        profileButton.style.display = 'block';
+                        loadMoods();
+                    } else {
+                        // No user or invalid user - redirect to login
+                        console.log('❌ No valid user authenticated - redirecting to login');
+                        currentUser = null;
+                        profileButton.style.display = 'none';
+                        redirectToLogin();
+                    }
+                });
+            }).catch((error) => {
+                console.log('⚠️ Could not clear existing session:', error);
+                // Continue with auth setup anyway
+                firebase.auth().onAuthStateChanged((user) => {
+                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
+                    authStateReady = true;
+                    
+                    if (user && user.uid && user.email) {
+                        currentUser = user;
+                        console.log('✅ Valid Google user authenticated:', user.displayName, user.email);
+                        updateProfileUI(user);
+                        profileButton.style.display = 'block';
+                        loadMoods();
+                    } else {
+                        console.log('❌ No valid user authenticated - redirecting to login');
+                        currentUser = null;
+                        profileButton.style.display = 'none';
+                        redirectToLogin();
+                    }
+                });
             });
             
-            // Safety timeout - if no auth state change in 5 seconds, redirect
+            // Safety timeout - if no auth state change in 3 seconds, redirect
             setTimeout(() => {
                 if (!authStateReady || !currentUser) {
                     console.error('⏰ Auth timeout - no user found, redirecting to login');
                     redirectToLogin();
                 }
-            }, 5000);
+            }, 3000);
         }
         
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM ready - starting auth initialization');
+            
+            // Check if running as PWA
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone === true;
+            
+            if (isPWA) {
+                console.log('🔍 Running as PWA - extra auth checks enabled');
+                // In PWA mode, be extra strict about authentication
+                authCheckTimeout = setTimeout(() => {
+                    console.error('⏰ PWA mode - no Firebase auth detected, redirecting');
+                    window.location.replace('login.html');
+                }, 1000);
+            }
             
             // Hide profile button initially
             profileButton.style.display = 'none';
@@ -520,7 +596,7 @@
             // Wait a moment for Firebase to load, then initialize
             setTimeout(() => {
                 initializeAuth();
-            }, 1000);
+            }, 500);
         });
         
         // Update Profile UI with user data
@@ -569,36 +645,48 @@
             }
         });
         
-        // Logout functionality - enhanced
+        // Logout functionality - enhanced with complete session clearing
         logoutButton.addEventListener('click', async () => {
             console.log('🚪 Logout button clicked');
             
             try {
-                if (typeof firebase !== 'undefined' && firebase.auth && currentUser) {
-                    console.log('🔥 Signing out user:', currentUser.displayName);
-                    
-                    // Clear user state immediately
-                    currentUser = null;
-                    authStateReady = false;
-                    profileButton.style.display = 'none';
-                    profileDropdown.classList.remove('show');
-                    
-                    // Sign out from Firebase
+                // Clear user state immediately
+                currentUser = null;
+                authStateReady = false;
+                profileButton.style.display = 'none';
+                profileDropdown.classList.remove('show');
+                
+                // Clear all local storage
+                localStorage.clear();
+                sessionStorage.clear();
+                console.log('🧹 Cleared all local storage');
+                
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    console.log('🔥 Signing out from Firebase...');
                     await firebase.auth().signOut();
                     console.log('✅ Firebase signout completed');
-                    
-                    // Force redirect
-                    redirectToLogin();
-                } else {
-                    console.log('⚠️ No Firebase auth or user - forcing redirect');
-                    currentUser = null;
-                    redirectToLogin();
                 }
+                
+                // Clear any PWA service worker cache
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        console.log('🧹 Service worker unregistered');
+                    }
+                }
+                
+                // Force redirect with cache busting
+                const timestamp = new Date().getTime();
+                window.location.replace(`login.html?t=${timestamp}`);
+                
             } catch (error) {
                 console.error('❌ Logout error:', error);
                 // Force redirect even on error
-                currentUser = null;
-                redirectToLogin();
+                localStorage.clear();
+                sessionStorage.clear();
+                const timestamp = new Date().getTime();
+                window.location.replace(`login.html?t=${timestamp}`);
             }
         });
         
