@@ -48,6 +48,44 @@ To run locally:
 2. Open `index.html` in a modern browser
 3. For PWA features, serve from a local server (like Live Server extension)
 
+⚠️ **Important: Firebase requires a web server** - The app won't work properly when opened directly as a file (file:// protocol).
+
+## Quick Start
+
+### Option 1: Using the Batch File (Windows)
+1. Double-click `start-server.bat`
+2. Open your browser to `http://localhost:8000`
+
+### Option 2: Manual Server Start
+1. Open Command Prompt/PowerShell
+2. Navigate to the project folder
+3. Run one of these commands:
+   - `python -m http.server 8000` (Python)
+   - `npx http-server -p 8000` (Node.js)
+   - `php -S localhost:8000` (PHP)
+
+### Option 3: Using VS Code Live Server
+1. Install "Live Server" extension in VS Code
+2. Right-click on `index.html` and select "Open with Live Server"
+
+## Authentication Flow
+- `index.html` - Main app (requires authentication)
+- `login.html` - Login page (Google sign-in)
+- App automatically redirects between pages based on auth state
+
+## Troubleshooting
+
+**App stuck on loading screen:**
+- Check browser console for errors
+- Ensure you're using http://localhost, not file://
+- Check Firebase configuration
+- Verify internet connection
+
+**Authentication issues:**
+- Clear browser cache and cookies
+- Check Firebase console for authentication logs
+- Ensure popup blockers are disabled
+
 ## Browser Support
 
 - Chrome 80+

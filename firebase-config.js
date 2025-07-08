@@ -10,18 +10,14 @@ const firebaseConfig = {
     measurementId: "G-DLBC8Z1M36"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication and get a reference to the service
-const auth = firebase.auth();
-
-// Initialize Cloud Firestore and get a reference to the service
-const db = firebase.firestore();
-
-// Configure Google Auth Provider
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-googleProvider.addScope('profile');
-googleProvider.addScope('email');
-
-console.log('🔥 Firebase initialized for Delulu Diaries! ✨');
+// Initialize Firebase only if it's available
+if (typeof firebase !== 'undefined') {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        console.log('🔥 Firebase initialized for Delulu Diaries! ✨');
+    } catch (error) {
+        console.error('❌ Firebase initialization error:', error);
+    }
+} else {
+    console.log('⏳ Firebase SDK not loaded yet');
+}

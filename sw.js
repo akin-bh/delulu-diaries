@@ -1,16 +1,13 @@
-// Delulu Diaries - Service Worker
-const CACHE_NAME = 'delulu-diaries-v1';
+// Delulu Diaries - Service Worker (localStorage version)
+const CACHE_NAME = 'delulu-diaries-localstorage-v1';
 const urlsToCache = [
-  '/delulu-diaries/',
-  '/delulu-diaries/index.html',
-  '/delulu-diaries/login.html',
-  '/delulu-diaries/manifest.json',
-  '/delulu-diaries/favicon.svg',
-  '/delulu-diaries/icon-192x192.svg',
-  '/delulu-diaries/icon-512x512.svg',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
+  './',
+  'index.html',
+  'style.css',
+  'manifest.json',
+  'favicon.svg',
+  'icon-192x192.svg',
+  'icon-512x512.svg'
 ];
 
 // Install event - cache resources
@@ -47,11 +44,11 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  // Only block caching for login page specifically, not Firebase auth APIs
+  // Always fetch fresh for authentication-sensitive pages
   if (event.request.url.includes('login.html') || 
-      event.request.url.includes('login?') ||
-      event.request.url.includes('logout')) {
-    // Always fetch from network for login/logout pages
+      event.request.url.includes('logout') ||
+      event.request.url.includes('signout') ||
+      event.request.url.includes('firebase')) {
     event.respondWith(fetch(event.request));
     return;
   }
@@ -85,111 +82,17 @@ self.addEventListener('fetch', (event) => {
         }).catch(() => {
           // If both cache and network fail, show offline page
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('index.html');
           }
         });
       })
   );
 });
 
-// Background sync for posting moods when back online
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'mood-sync') {
-    event.waitUntil(syncMoods());
-  }
-});
-
-async function syncMoods() {
-  try {
-    // Get pending moods from IndexedDB or localStorage
-    const pendingMoods = JSON.parse(localStorage.getItem('pendingMoods') || '[]');
-    
-    for (const mood of pendingMoods) {
-      // In a real app, you'd send this to your server
-      console.log('Syncing mood:', mood);
-    }
-    
-    // Clear pending moods after successful sync
-    localStorage.removeItem('pendingMoods');
-  } catch (error) {
-    console.error('Error syncing moods:', error);
-  }
-}
-
-// Push notifications (for future enhancement)
-self.addEventListener('push', (event) => {
-  const options = {
-    body: 'Time to share your delulu moment! ✨',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'Share Mood',
-        icon: '/icon-192x192.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/icon-192x192.png'
-      }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('Delulu Diaries 💖', options)
-  );
-});
-
-// Notification click handler
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  if (event.action === 'explore') {
-    // Open the app
-    event.waitUntil(
-      clients.openWindow('/')
-    );
-  }
-});
-
 // Message handler for communication with main app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
-  }
-  
-  // Handle auth cache clearing
-  if (event.data && event.data.type === 'CLEAR_AUTH_CACHE') {
-    console.log('🧹 Clearing login page cache...');
-    event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            return caches.open(cacheName).then((cache) => {
-              return cache.keys().then((requests) => {
-                return Promise.all(
-                  requests.map((request) => {
-                    // Only remove cached login page, not Firebase APIs
-                    if (request.url.includes('login.html') || 
-                        request.url.includes('login?') ||
-                        request.url.includes('logout')) {
-                      console.log('🧹 Removing cached login page:', request.url);
-                      return cache.delete(request);
-                    }
-                  })
-                );
-              });
-            });
-          })
-        );
-      })
-    );
   }
 });
 

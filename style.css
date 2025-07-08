@@ -46,11 +46,11 @@ body {
     right: 20px !important;
     z-index: 99999 !important;
     /* Temporary: Make it more visible */
-    background: rgba(255, 0, 0, 0.8) !important;
-    border: 5px solid yellow !important;
+    /* background: rgba(255, 0, 0, 0.8) !important; */
+    /* border: 5px solid yellow !important; */
     padding: 20px !important;
     border-radius: 15px !important;
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+    /* box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important; */
 }
 
 .profile-container {
@@ -356,97 +356,85 @@ body {
 }
 
 .mood-post {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
-    border-left: 4px solid #ff69b4;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    animation: slideIn 0.5s ease-out;
-}
-
-.mood-post:hover {
-    transform: translateX(5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+.mood-post:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.post-user {
+.mood-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    margin-bottom: 15px;
 }
 
-.post-user-photo {
-    width: 24px;
-    height: 24px;
+.mood-avatar {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 105, 180, 0.3);
+    margin-right: 12px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.post-user-name {
-    font-size: 0.9rem;
-    font-weight: 500;
+.mood-info {
+    flex: 1;
+}
+
+.mood-author {
+    font-weight: 600;
     color: #333;
+    font-size: 0.9rem;
 }
 
-.post-time {
-    font-size: 0.8rem;
+.mood-date {
     color: #666;
+    font-size: 0.8rem;
+    margin-top: 2px;
 }
 
-.mood-post .mood-text {
+.mood-text {
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: #444;
+    word-wrap: break-word;
+}
+
+.no-posts {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    margin: 20px 0;
+}
+
+.no-posts-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.no-posts h3 {
+    font-size: 1.5rem;
     margin-bottom: 10px;
     color: #333;
 }
 
-.mood-post .mood-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
+.no-posts p {
     color: #666;
-}
-
-.delete-post-btn {
-    background: none;
-    border: none;
     font-size: 1rem;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.delete-post-btn:hover {
-    background: rgba(255, 107, 107, 0.1);
-    transform: scale(1.1);
-}
-
-.mood-tag {
-    background: rgba(255, 105, 180, 0.1);
-    color: #ff69b4;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    line-height: 1.5;
 }
 
 /* Responsive Design */

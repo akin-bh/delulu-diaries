@@ -3,15 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delulu Diaries ✨ - localStorage Version</title>
+    <title>Delulu Diaries ✨ - FRESH NO FIREBASE</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff69b4">
     <link rel="stylesheet" href="style.css">
     
-    <!-- NO FIREBASE - LOCALSTORAGE ONLY -->
-    
     <style>
+        /* Force override any cached styles */
+        body {
+            font-family: 'Poppins', sans-serif !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            min-height: 100vh !important;
+            color: #333 !important;
+            overflow-x: hidden !important;
+        }
+        
+        .fresh-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
         .loading-screen {
             position: fixed;
             top: 0;
@@ -47,12 +66,30 @@
             font-weight: 500;
             text-align: center;
         }
+        
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            z-index: 9999;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
+    <div class="fresh-indicator">✅ FRESH - NO FIREBASE</div>
+    <div id="debugInfo" class="debug-info">Loading...</div>
+    
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Loading your delulu diary...</div>
+        <div class="loading-text">Loading FRESH Delulu Diaries...</div>
     </div>
 
     <!-- Main App -->
@@ -60,7 +97,8 @@
         <header class="header">
             <div class="container">
                 <div class="header-content">
-                    <h1 class="logo">Delulu Diaries ✨</h1>
+                    <h1 class="title">Delulu Diaries ✨</h1>
+                    <p class="subtitle">Express your delulu moments & main character energy 💅</p>
                     <div class="header-actions">
                         <div class="user-profile">
                             <div class="profile-info">
@@ -87,9 +125,13 @@
                             <button class="mood-btn crying" data-mood="crying">😭 Crying</button>
                         </div>
                         <div class="mood-input-container">
-                            <textarea id="moodInput" placeholder="Spill the tea... 🍵" maxlength="500"></textarea>
+                            <div class="input-group">
+                                <textarea id="moodInput" placeholder="Spill the tea... 🍵" maxlength="500"></textarea>
+                                <div class="char-counter">
+                                    <span id="charCount" class="char-count">0</span>/500
+                                </div>
+                            </div>
                             <div class="mood-input-footer">
-                                <span id="charCount" class="char-count">0</span>
                                 <button id="submitMood" class="submit-btn">Post Vibe ✨</button>
                             </div>
                         </div>
@@ -105,29 +147,35 @@
     </div>
 
     <script>
-        // DELULU DIARIES - LOCALSTORAGE ONLY VERSION
-        // NO FIREBASE DEPENDENCIES
-        console.log('🚀 Starting Delulu Diaries - localStorage version...');
-        console.log('🔥 Firebase: DISABLED - Using localStorage only');
+        // ============================================
+        // DELULU DIARIES - FRESH NO FIREBASE VERSION
+        // ============================================
+        
+        function debugLog(message) {
+            console.log(message);
+            const debugDiv = document.getElementById('debugInfo');
+            if (debugDiv) {
+                debugDiv.innerHTML = message + '<br>' + debugDiv.innerHTML;
+            }
+        }
+        
+        debugLog('🚀 FRESH VERSION - NO FIREBASE LOADED');
+        debugLog('📊 localStorage available: ' + (typeof(Storage) !== "undefined"));
+        
+        // Check if Firebase is accidentally loaded
+        if (typeof firebase !== 'undefined') {
+            debugLog('⚠️ WARNING: Firebase detected! This should not happen.');
+        } else {
+            debugLog('✅ CONFIRMED: No Firebase detected');
+        }
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 DOM loaded, initializing app...');
-            
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
-                    .then((registration) => {
-                        console.log('✅ Service Worker registered');
-                    })
-                    .catch((error) => {
-                        console.log('❌ Service Worker registration failed:', error);
-                    });
-            }
+            debugLog('📄 DOM loaded, initializing app...');
             
             // Hide loading screen and show app
             setTimeout(() => {
-                console.log('🎨 Showing main app...');
+                debugLog('🎨 Showing main app...');
                 document.getElementById('loadingScreen').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
                 initApp();
@@ -136,7 +184,16 @@
 
         // Initialize app functionality
         function initApp() {
-            console.log('🔧 Setting up app functionality...');
+            debugLog('🔧 Setting up app functionality...');
+            
+            // Test localStorage immediately
+            try {
+                localStorage.setItem('test', 'works');
+                localStorage.removeItem('test');
+                debugLog('✅ localStorage test passed');
+            } catch (e) {
+                debugLog('❌ localStorage test failed: ' + e.message);
+            }
             
             // Setup event listeners
             setupEventListeners();
@@ -147,7 +204,7 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            console.log('🎪 Setting up event listeners...');
+            debugLog('🎪 Setting up event listeners...');
             
             // Mood input character count
             const moodInput = document.getElementById('moodInput');
@@ -157,12 +214,14 @@
                 moodInput.addEventListener('input', () => {
                     charCount.textContent = moodInput.value.length;
                 });
+                debugLog('✅ Character counter setup');
             }
 
             // Submit mood
             const submitBtn = document.getElementById('submitMood');
             if (submitBtn) {
                 submitBtn.addEventListener('click', submitMood);
+                debugLog('✅ Submit button setup');
             }
 
             // Mood presets
@@ -177,32 +236,36 @@
                     }
                 });
             });
+            debugLog('✅ Mood presets setup');
         }
 
-        // Submit mood
+        // Submit mood - PURE LOCALSTORAGE VERSION
         function submitMood() {
-            console.log('📝 Submitting mood...');
+            debugLog('📝 STARTING MOOD SUBMISSION...');
             
             const moodInput = document.getElementById('moodInput');
             const submitBtn = document.getElementById('submitMood');
             
             if (!moodInput || !submitBtn) {
-                console.error('❌ Required elements not found');
+                debugLog('❌ Required elements not found');
                 showNotification('Error: Could not find required elements', 'error');
                 return;
             }
             
             const moodText = moodInput.value.trim();
             if (!moodText) {
+                debugLog('⚠️ Empty mood text');
                 showNotification('Please write something before posting! 📝', 'warning');
                 return;
             }
 
+            debugLog('📦 Mood text: ' + moodText);
+
             try {
-                console.log('💾 Saving mood to localStorage...');
-                
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Posting...';
+                
+                debugLog('💾 Creating mood object...');
 
                 // Create mood object
                 const mood = {
@@ -213,7 +276,7 @@
                     timestamp: new Date().toISOString()
                 };
 
-                console.log('📦 Mood object created:', mood);
+                debugLog('📦 Mood object created: ' + JSON.stringify(mood));
 
                 // Get existing moods from localStorage
                 let moods = [];
@@ -221,28 +284,45 @@
                     const existingMoods = localStorage.getItem('delulu-moods');
                     if (existingMoods) {
                         moods = JSON.parse(existingMoods);
+                        debugLog('📚 Found ' + moods.length + ' existing moods');
+                    } else {
+                        debugLog('📚 No existing moods found');
                     }
                 } catch (e) {
-                    console.warn('⚠️ Error parsing existing moods, starting fresh:', e);
+                    debugLog('⚠️ Error parsing existing moods: ' + e.message);
                     moods = [];
                 }
 
                 // Add new mood to the beginning
                 moods.unshift(mood);
+                debugLog('📝 Added mood to array, total: ' + moods.length);
 
                 // Save back to localStorage
-                localStorage.setItem('delulu-moods', JSON.stringify(moods));
-                console.log('✅ Mood saved successfully');
+                const moodsJson = JSON.stringify(moods);
+                localStorage.setItem('delulu-moods', moodsJson);
+                debugLog('✅ Mood saved to localStorage');
+
+                // Verify it was saved
+                const verification = localStorage.getItem('delulu-moods');
+                if (verification) {
+                    debugLog('✅ Verification: Mood successfully stored');
+                } else {
+                    debugLog('❌ Verification: Mood NOT stored');
+                }
 
                 // Clear input
                 moodInput.value = '';
-                document.getElementById('charCount').textContent = '0';
+                const charCount = document.getElementById('charCount');
+                if (charCount) {
+                    charCount.textContent = '0';
+                }
 
                 showNotification('Vibe posted! ✨', 'success');
                 loadMoods();
 
             } catch (error) {
-                console.error('❌ Error posting mood:', error);
+                debugLog('❌ ERROR in submitMood: ' + error.message);
+                debugLog('❌ ERROR stack: ' + error.stack);
                 showNotification('Failed to post mood: ' + error.message, 'error');
             } finally {
                 submitBtn.disabled = false;
@@ -252,12 +332,12 @@
 
         // Load moods from localStorage
         function loadMoods() {
-            console.log('📚 Loading moods from localStorage...');
+            debugLog('📚 Loading moods from localStorage...');
             
             try {
                 const postsContainer = document.getElementById('moodPosts');
                 if (!postsContainer) {
-                    console.error('❌ Posts container not found');
+                    debugLog('❌ Posts container not found');
                     return;
                 }
 
@@ -266,13 +346,15 @@
                     const storedMoods = localStorage.getItem('delulu-moods');
                     if (storedMoods) {
                         moods = JSON.parse(storedMoods);
+                        debugLog('📊 Loaded ' + moods.length + ' moods from localStorage');
+                    } else {
+                        debugLog('📊 No moods in localStorage');
                     }
                 } catch (e) {
-                    console.warn('⚠️ Error parsing stored moods:', e);
+                    debugLog('⚠️ Error parsing stored moods: ' + e.message);
                     moods = [];
                 }
 
-                console.log(`📊 Found ${moods.length} moods`);
                 postsContainer.innerHTML = '';
 
                 if (moods.length === 0) {
@@ -287,7 +369,7 @@
                 }
 
                 moods.forEach((mood, index) => {
-                    console.log(`📝 Rendering mood ${index + 1}:`, mood);
+                    debugLog('📝 Rendering mood ' + (index + 1) + ': ' + mood.text.substring(0, 50) + '...');
                     
                     const postDiv = document.createElement('div');
                     postDiv.className = 'mood-post';
@@ -308,8 +390,10 @@
                     postsContainer.appendChild(postDiv);
                 });
 
+                debugLog('✅ All moods rendered successfully');
+
             } catch (error) {
-                console.error('❌ Error loading moods:', error);
+                debugLog('❌ ERROR in loadMoods: ' + error.message);
                 const postsContainer = document.getElementById('moodPosts');
                 if (postsContainer) {
                     postsContainer.innerHTML = `
@@ -325,7 +409,7 @@
 
         // Show notification
         function showNotification(message, type = 'info') {
-            console.log(`🔔 Showing ${type} notification:`, message);
+            debugLog('🔔 Showing ' + type + ' notification: ' + message);
             
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -371,6 +455,35 @@
                 }, 300);
             }, 3000);
         }
+
+        // Clear all data function (for testing)
+        function clearAllData() {
+            debugLog('🗑️ Clearing all localStorage data...');
+            localStorage.removeItem('delulu-moods');
+            loadMoods();
+            showNotification('All data cleared! 🗑️', 'info');
+        }
+
+        // Add clear button for testing
+        setTimeout(() => {
+            const clearBtn = document.createElement('button');
+            clearBtn.textContent = '🗑️ Clear All';
+            clearBtn.style.cssText = `
+                position: fixed;
+                top: 60px;
+                left: 10px;
+                background: #ff4444;
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 5px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                z-index: 9999;
+            `;
+            clearBtn.onclick = clearAllData;
+            document.body.appendChild(clearBtn);
+        }, 2000);
     </script>
 </body>
 </html>

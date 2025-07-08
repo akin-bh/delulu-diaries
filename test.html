@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Delulu Diaries ✨</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .warning { background: rgba(255, 193, 7, 0.3); }
+        
+        button {
+            background: white;
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Delulu Diaries - Test Page</h1>
+        
+        <div id="status" class="status">
+            Testing Firebase connection...
+        </div>
+        
+        <div id="details"></div>
+        
+        <button onclick="testFirebase()">Test Firebase</button>
+        <button onclick="window.location.href='login.html'">Go to Login</button>
+        <button onclick="window.location.href='index.html'">Go to Index</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        function updateStatus(message, type = 'warning') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function addDetail(message) {
+            const detailsDiv = document.getElementById('details');
+            const p = document.createElement('p');
+            p.textContent = message;
+            detailsDiv.appendChild(p);
+            console.log(`[INFO] ${message}`);
+        }
+        
+        function testFirebase() {
+            updateStatus('Testing Firebase...', 'warning');
+            document.getElementById('details').innerHTML = '';
+            
+            // Test 1: Check if Firebase is loaded
+            if (typeof firebase !== 'undefined') {
+                addDetail('✅ Firebase SDK loaded');
+                
+                try {
+                    // Test 2: Initialize Firebase
+                    const auth = firebase.auth();
+                    const db = firebase.firestore();
+                    addDetail('✅ Firebase services initialized');
+                    
+                    // Test 3: Check authentication state
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            addDetail(`✅ User authenticated: ${user.displayName}`);
+                            updateStatus('Firebase working! User is logged in.', 'success');
+                        } else {
+                            addDetail('❌ No user authenticated');
+                            updateStatus('Firebase working but no user logged in.', 'warning');
+                        }
+                    });
+                    
+                    // Test 4: Test Firestore connection
+                    db.collection('test').limit(1).get()
+                        .then(() => {
+                            addDetail('✅ Firestore connection successful');
+                        })
+                        .catch((error) => {
+                            addDetail(`❌ Firestore error: ${error.message}`);
+                        });
+                        
+                } catch (error) {
+                    addDetail(`❌ Firebase initialization error: ${error.message}`);
+                    updateStatus('Firebase initialization failed', 'error');
+                }
+                
+            } else {
+                addDetail('❌ Firebase SDK not loaded');
+                updateStatus('Firebase SDK not loaded', 'error');
+            }
+        }
+        
+        // Auto-test on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testFirebase, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delulu Diaries ✨ - Fresh Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .mood-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        .submit-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        .mood-posts {
+            margin-top: 30px;
+        }
+        .mood-post {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .mood-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .mood-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .mood-author {
+            font-weight: bold;
+        }
+        .mood-date {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .mood-text {
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Delulu Diaries ✨ - Fresh Test</h1>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <div>
+            <textarea id="moodInput" class="mood-input" placeholder="What's your vibe today? ✨"></textarea>
+            <button id="submitMood" class="submit-btn">Post Vibe ✨</button>
+        </div>
+        
+        <div class="mood-posts">
+            <h2>Your Recent Vibes</h2>
+            <div id="moodPosts"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Testing Fresh Delulu Diaries - No Firebase!');
+        
+        // Show status message
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Submit mood
+        function submitMood() {
+            console.log('📝 Submitting mood...');
+            
+            const moodInput = document.getElementById('moodInput');
+            const moodText = moodInput.value.trim();
+            
+            if (!moodText) {
+                showStatus('Please write something before posting! 📝', 'error');
+                return;
+            }
+            
+            try {
+                // Create mood object
+                const mood = {
+                    id: Date.now(),
+                    text: moodText,
+                    userName: 'Delulu User',
+                    userPhoto: 'https://via.placeholder.com/40x40?text=👤',
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('📦 Mood object created:', mood);
+                
+                // Get existing moods
+                let moods = [];
+                try {
+                    const existingMoods = localStorage.getItem('delulu-moods');
+                    if (existingMoods) {
+                        moods = JSON.parse(existingMoods);
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Error parsing existing moods:', e);
+                    moods = [];
+                }
+                
+                // Add new mood
+                moods.unshift(mood);
+                
+                // Save to localStorage
+                localStorage.setItem('delulu-moods', JSON.stringify(moods));
+                console.log('✅ Mood saved successfully');
+                
+                // Clear input
+                moodInput.value = '';
+                
+                showStatus('Vibe posted! ✨', 'success');
+                loadMoods();
+                
+            } catch (error) {
+                console.error('❌ Error posting mood:', error);
+                showStatus('Failed to post mood: ' + error.message, 'error');
+            }
+        }
+        
+        // Load moods
+        function loadMoods() {
+            console.log('📚 Loading moods...');
+            
+            try {
+                const postsContainer = document.getElementById('moodPosts');
+                
+                let moods = [];
+                try {
+                    const storedMoods = localStorage.getItem('delulu-moods');
+                    if (storedMoods) {
+                        moods = JSON.parse(storedMoods);
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Error parsing stored moods:', e);
+                    moods = [];
+                }
+                
+                console.log(`📊 Found ${moods.length} moods`);
+                postsContainer.innerHTML = '';
+                
+                if (moods.length === 0) {
+                    postsContainer.innerHTML = '<p>No moods yet! Share your first vibe! ✨</p>';
+                    return;
+                }
+                
+                moods.forEach((mood, index) => {
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'mood-post';
+                    
+                    const date = new Date(mood.timestamp);
+                    
+                    postDiv.innerHTML = `
+                        <div class="mood-header">
+                            <img src="${mood.userPhoto}" alt="User" class="mood-avatar">
+                            <div>
+                                <div class="mood-author">${mood.userName}</div>
+                                <div class="mood-date">${date.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="mood-text">${mood.text}</div>
+                    `;
+                    
+                    postsContainer.appendChild(postDiv);
+                });
+                
+            } catch (error) {
+                console.error('❌ Error loading moods:', error);
+                showStatus('Error loading moods: ' + error.message, 'error');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded, initializing...');
+            
+            // Setup event listeners
+            document.getElementById('submitMood').addEventListener('click', submitMood);
+            
+            // Load existing moods
+            loadMoods();
+            
+            showStatus('✅ Fresh localStorage version loaded - No Firebase!', 'success');
+        });
+    </script>
+</body>
+</html>
