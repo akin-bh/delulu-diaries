@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Debug - Delulu Diaries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+        }
+        .success {
+            border-left-color: #28a745;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Authentication Debug Tool</h1>
+    
+    <div class="debug-info">
+        <h3>Current Status</h3>
+        <p><strong>User:</strong> <span id="currentUser">Loading...</span></p>
+        <p><strong>Auth State:</strong> <span id="authState">Loading...</span></p>
+        <p><strong>Firebase:</strong> <span id="firebaseStatus">Loading...</span></p>
+    </div>
+    
+    <div class="debug-info">
+        <h3>Actions</h3>
+        <button onclick="checkAuth()">Check Auth State</button>
+        <button onclick="clearStorage()">Clear Storage</button>
+        <button onclick="goToLogin()">Go to Login</button>
+        <button onclick="goToMain()">Go to Main App</button>
+        <button onclick="testSignOut()">Sign Out</button>
+    </div>
+    
+    <div class="debug-info">
+        <h3>Real-time Log</h3>
+        <div id="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        let authListener = null;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+        
+        function updateStatus(user, authState, firebaseStatus) {
+            document.getElementById('currentUser').textContent = user || 'None';
+            document.getElementById('authState').textContent = authState || 'Unknown';
+            document.getElementById('firebaseStatus').textContent = firebaseStatus || 'Unknown';
+        }
+        
+        function checkAuth() {
+            log('🔍 Checking authentication...');
+            
+            if (typeof firebase === 'undefined') {
+                log('❌ Firebase not loaded');
+                updateStatus('None', 'Firebase not loaded', 'Not loaded');
+                return;
+            }
+            
+            log('✅ Firebase is loaded');
+            updateStatus('None', 'Checking...', 'Loaded');
+            
+            const currentUser = firebase.auth().currentUser;
+            if (currentUser) {
+                log(`✅ Current user: ${currentUser.email}`);
+                updateStatus(currentUser.email, 'Authenticated', 'Loaded');
+            } else {
+                log('❌ No current user');
+                updateStatus('None', 'Not authenticated', 'Loaded');
+            }
+            
+            // Check localStorage
+            const storedUser = localStorage.getItem('deluluUser');
+            if (storedUser) {
+                log(`📦 Stored user data: ${storedUser}`);
+            } else {
+                log('📦 No stored user data');
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            log('🧹 Storage cleared');
+        }
+        
+        function goToLogin() {
+            log('🚪 Redirecting to login...');
+            window.location.href = 'login.html';
+        }
+        
+        function goToMain() {
+            log('🏠 Redirecting to main app...');
+            window.location.href = 'index.html';
+        }
+        
+        function testSignOut() {
+            log('👋 Signing out...');
+            if (firebase && firebase.auth) {
+                firebase.auth().signOut().then(() => {
+                    log('✅ Sign out successful');
+                    clearStorage();
+                    checkAuth();
+                }).catch((error) => {
+                    log(`❌ Sign out error: ${error.message}`);
+                });
+            } else {
+                log('❌ Firebase not available for sign out');
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Debug tool starting...');
+            
+            // Wait for Firebase to load
+            const waitForFirebase = () => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    log('🔥 Firebase loaded, setting up auth listener...');
+                    
+                    // Set up auth state listener
+                    authListener = firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            log(`🔄 Auth state changed: User logged in - ${user.email}`);
+                            updateStatus(user.email, 'Authenticated', 'Loaded');
+                        } else {
+                            log('🔄 Auth state changed: User logged out');
+                            updateStatus('None', 'Not authenticated', 'Loaded');
+                        }
+                    });
+                    
+                    // Initial check
+                    checkAuth();
+                } else {
+                    log('⏳ Waiting for Firebase to load...');
+                    setTimeout(waitForFirebase, 100);
+                }
+            };
+            
+            waitForFirebase();
+        });
+    </script>
+</body>
+</html>

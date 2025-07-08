@@ -18,20 +18,46 @@ class DeluluDiaries {
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 console.log('🔥 Firebase available, setting up auth listener...');
                 
-                // Check authentication state
-                firebase.auth().onAuthStateChanged((user) => {
-                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
-                    
-                    if (user) {
-                        this.currentUser = user;
-                        console.log('✅ User authenticated, setting up app...');
-                        this.setupApp();
-                    } else {
-                        console.log('❌ User not authenticated, redirecting to login...');
-                        // User is not logged in, redirect to login
-                        window.location.href = 'login.html';
-                    }
-                });
+                // Set persistence to LOCAL to maintain auth across sessions
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                    .then(() => {
+                        console.log('✅ Auth persistence set to LOCAL');
+                        
+                        // Check authentication state
+                        firebase.auth().onAuthStateChanged((user) => {
+                            console.log('🔄 Auth state changed:', user ? `User: ${user.displayName} (${user.email})` : 'No user');
+                            
+                            if (user && user.uid && user.email) {
+                                this.currentUser = user;
+                                console.log('✅ User authenticated, setting up app...');
+                                this.setupApp();
+                            } else {
+                                console.log('❌ User not authenticated, redirecting to login...');
+                                // Small delay to ensure auth state is fully processed
+                                setTimeout(() => {
+                                    window.location.href = 'login.html';
+                                }, 100);
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error setting auth persistence:', error);
+                        // Fallback: continue without persistence setting
+                        firebase.auth().onAuthStateChanged((user) => {
+                            console.log('🔄 Auth state changed (no persistence):', user ? `User: ${user.displayName}` : 'No user');
+                            
+                            if (user && user.uid && user.email) {
+                                this.currentUser = user;
+                                console.log('✅ User authenticated, setting up app...');
+                                this.setupApp();
+                            } else {
+                                console.log('❌ User not authenticated, redirecting to login...');
+                                setTimeout(() => {
+                                    window.location.href = 'login.html';
+                                }, 100);
+                            }
+                        });
+                    });
             } else {
                 console.log('⏳ Firebase not ready yet, retrying...');
                 setTimeout(waitForFirebase, 100);

@@ -62,10 +62,10 @@ class LoginManager {
             const firstName = user.displayName.split(' ')[0]; // Get first name
             this.showNotification(`Welcome ${firstName}! 🎉✨`, 'success');
 
-            // Redirect to main app
+            // Redirect to main app immediately after a short delay
             setTimeout(() => {
                 this.redirectToApp();
-            }, 2000); // Increased delay to show the welcome message
+            }, 500); // Reduced delay to minimize auth state issues
 
         } catch (error) {
             console.error('❌ Error signing in:', error);
