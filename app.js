@@ -12,20 +12,33 @@ class DeluluDiaries {
 
     checkAuthState() {
         console.log('🔍 Checking auth state...');
-        // Check authentication state
-        auth.onAuthStateChanged((user) => {
-            console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
-            
-            if (user) {
-                this.currentUser = user;
-                console.log('✅ User authenticated, setting up app...');
-                this.setupApp();
+        
+        // Wait for Firebase to be available
+        const waitForFirebase = () => {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                console.log('🔥 Firebase available, setting up auth listener...');
+                
+                // Check authentication state
+                firebase.auth().onAuthStateChanged((user) => {
+                    console.log('Auth state changed:', user ? `User: ${user.displayName}` : 'No user');
+                    
+                    if (user) {
+                        this.currentUser = user;
+                        console.log('✅ User authenticated, setting up app...');
+                        this.setupApp();
+                    } else {
+                        console.log('❌ User not authenticated, redirecting to login...');
+                        // User is not logged in, redirect to login
+                        window.location.href = 'login.html';
+                    }
+                });
             } else {
-                console.log('❌ User not authenticated, redirecting to login...');
-                // User is not logged in, redirect to login
-                window.location.href = 'login.html';
+                console.log('⏳ Firebase not ready yet, retrying...');
+                setTimeout(waitForFirebase, 100);
             }
-        });
+        };
+        
+        waitForFirebase();
     }
 
     setupApp() {
@@ -162,7 +175,7 @@ class DeluluDiaries {
 
     async logout() {
         try {
-            await auth.signOut();
+            await firebase.auth().signOut();
             localStorage.removeItem('deluluUser');
             this.showNotification('Logged out successfully! See you later! 👋', 'success');
             setTimeout(() => {
@@ -242,7 +255,7 @@ class DeluluDiaries {
             };
 
             // Add to Firestore
-            await db.collection('moods').add(post);
+            await firebase.firestore().collection('moods').add(post);
 
             // Clear input
             moodInput.value = '';
@@ -270,7 +283,7 @@ class DeluluDiaries {
 
     async loadUserPosts() {
         try {
-            const snapshot = await db.collection('moods')
+            const snapshot = await firebase.firestore().collection('moods')
                 .where('uid', '==', this.currentUser.uid)
                 .orderBy('timestamp', 'desc')
                 .limit(50)
@@ -347,7 +360,7 @@ class DeluluDiaries {
         }
 
         try {
-            await db.collection('moods').doc(postId).delete();
+            await firebase.firestore().collection('moods').doc(postId).delete();
             this.showNotification('Vibe deleted successfully! 💔', 'success');
             this.loadUserPosts();
         } catch (error) {

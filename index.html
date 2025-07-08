@@ -396,46 +396,8 @@
     <!-- App Logic -->
     <script src="app.js"></script>
 
-    <!-- Authentication Check and App Initialization -->
+    <!-- Service Worker Registration -->
     <script>
-        // Check authentication immediately
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🔍 Checking authentication...');
-            
-            // Hide the main content initially
-            document.body.style.display = 'none';
-            
-            // Wait for Firebase to load
-            const checkFirebase = () => {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    console.log('🔥 Firebase loaded, checking auth state...');
-                    
-                    // Check authentication state
-                    firebase.auth().onAuthStateChanged((user) => {
-                        if (user) {
-                            console.log('✅ User is authenticated:', user.email);
-                            // Show the main content
-                            document.body.style.display = 'block';
-                            // Initialize the app
-                            if (typeof DeluluDiaries !== 'undefined') {
-                                new DeluluDiaries();
-                            }
-                        } else {
-                            console.log('❌ User not authenticated, redirecting to login...');
-                            // Redirect to login page
-                            window.location.href = 'login.html';
-                        }
-                    });
-                } else {
-                    console.log('⏳ Firebase not loaded yet, retrying...');
-                    setTimeout(checkFirebase, 100);
-                }
-            };
-            
-            // Start checking
-            checkFirebase();
-        });
-        
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
