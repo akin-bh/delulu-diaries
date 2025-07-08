@@ -1,14 +1,16 @@
 // Delulu Diaries - Service Worker
 const CACHE_NAME = 'delulu-diaries-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
+  './',
+  './index.html',
+  './login.html',
+  './manifest.json',
+  './favicon.svg',
+  './icon-192x192.svg',
+  './icon-512x512.svg',
+  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
 ];
 
 // Install event - cache resources

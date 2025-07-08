@@ -2,7 +2,7 @@
   "name": "Delulu Diaries",
   "short_name": "Delulu",
   "description": "Your safe space to be absolutely delulu and share your main character moments",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#ff69b4",
   "background_color": "#667eea",

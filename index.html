@@ -237,6 +237,31 @@
             background: #ff5252;
             transform: translateY(-1px);
         }
+        
+        /* PWA Install Button */
+        .install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            transition: all 0.3s ease;
+            display: block !important;
+            font-size: 14px;
+        }
+        
+        .install-button:hover {
+            background: #45b7d1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -256,6 +281,11 @@
             🚪 Sign Out
         </button>
     </div>
+    
+    <!-- PWA Install Button -->
+    <button id="installButton" class="install-button">
+        📱 Install App
+    </button>
     
     <div class="container">
         <!-- Header -->
@@ -353,6 +383,71 @@
         const profileName = document.getElementById('profileName');
         const profileEmail = document.getElementById('profileEmail');
         const logoutButton = document.getElementById('logoutButton');
+        const installButton = document.getElementById('installButton');
+        
+        // PWA Installation
+        let deferredPrompt;
+        
+        // Always show install button
+        installButton.style.display = 'block';
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+            installButton.textContent = '📱 Install App';
+        });
+        
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Native PWA installation
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`👤 User response to install prompt: ${outcome}`);
+                if (outcome === 'accepted') {
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                }
+            } else {
+                // Fallback: Show manual installation instructions
+                showInstallInstructions();
+            }
+        });
+        
+        // Show manual installation instructions
+        function showInstallInstructions() {
+            const userAgent = navigator.userAgent;
+            let instructions = '';
+            
+            if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+                instructions = `📱 To install on iOS:\n\n1. Tap the Share button (⬆️)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to install the app`;
+            } else if (userAgent.includes('Android')) {
+                instructions = `📱 To install on Android:\n\n1. Tap the menu (⋮) in your browser\n2. Tap "Add to Home Screen" or "Install App"\n3. Tap "Add" to install`;
+            } else {
+                instructions = `💻 To install on desktop:\n\n1. Look for an install icon (⬇️) in your browser's address bar\n2. Or use your browser's menu → "Install App"\n3. Follow the prompts to install`;
+            }
+            
+            alert(instructions);
+        }
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA was installed');
+            installButton.style.display = 'none';
+        });
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('🔧 Service Worker registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
         
         // Show profile button immediately (for Live Server compatibility)
         profileButton.style.display = 'block';
@@ -375,9 +470,11 @@
                         profileButton.style.display = 'block';
                         console.log('✅ User signed in:', user.displayName);
                     } else {
-                        // No user is signed in, redirect to login
-                        console.log('❌ No user signed in, redirecting to login');
-                        window.location.href = 'login.html';
+                        // No user is signed in - FOR PWA: Don't redirect, just show demo mode
+                        console.log('❌ No user signed in, running in demo mode for PWA');
+                        profileButton.style.display = 'block';
+                        profileName.textContent = 'PWA User';
+                        profileEmail.textContent = 'pwa@deluludiaries.app';
                     }
                 });
             } else {
@@ -425,6 +522,74 @@
         });
         
         console.log('🔥 Profile management initialized (Live Server compatible)');
+        
+        // Mood Input Functionality
+        const moodInput = document.getElementById('moodInput');
+        const charCount = document.getElementById('charCount');
+        const submitMoodBtn = document.getElementById('submitMood');
+        const moodPosts = document.getElementById('moodPosts');
+        const moodButtons = document.querySelectorAll('.mood-btn');
+        
+        // Character counter
+        moodInput.addEventListener('input', () => {
+            const count = moodInput.value.length;
+            charCount.textContent = count;
+            charCount.style.color = count > 250 ? '#ff6b6b' : '#666';
+        });
+        
+        // Preset mood buttons
+        moodButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const mood = button.getAttribute('data-mood');
+                moodInput.value = `Feeling ${mood} today! ✨`;
+                moodInput.focus();
+                // Update character count
+                charCount.textContent = moodInput.value.length;
+            });
+        });
+        
+        // Submit mood functionality
+        submitMoodBtn.addEventListener('click', () => {
+            const moodText = moodInput.value.trim();
+            if (moodText) {
+                addMoodPost(moodText);
+                moodInput.value = '';
+                charCount.textContent = '0';
+            } else {
+                alert('Please share your vibe first! ✨');
+            }
+        });
+        
+        // Add mood post to the list
+        function addMoodPost(text) {
+            const noPostsDiv = document.querySelector('.no-posts');
+            if (noPostsDiv) {
+                noPostsDiv.remove();
+            }
+            
+            const postDiv = document.createElement('div');
+            postDiv.className = 'mood-post';
+            postDiv.style.cssText = `
+                background: rgba(255, 255, 255, 0.9);
+                padding: 20px;
+                border-radius: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border-left: 4px solid #ff69b4;
+            `;
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            postDiv.innerHTML = `
+                <div style="font-size: 1rem; color: #333; margin-bottom: 10px;">${text}</div>
+                <div style="font-size: 0.8rem; color: #666; text-align: right;">
+                    Posted at ${timeStr} 💖
+                </div>
+            `;
+            
+            moodPosts.insertBefore(postDiv, moodPosts.firstChild);
+        }
     </script>
 </body>
 </html>
