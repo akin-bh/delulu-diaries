@@ -451,23 +451,33 @@
             });
         }
         
-        // Show profile button and install button immediately (for Live Server compatibility)
-        profileButton.style.display = 'block';
+        // Show profile button and install button immediately (hidden until user is authenticated)
+        profileButton.style.display = 'none';
         installButton.style.display = 'block';
+        
+        // Add immediate auth check - if no Firebase user is found within 5 seconds, redirect
+        setTimeout(() => {
+            if (!currentUser) {
+                console.log('⏰ No authenticated user found after 5 seconds - redirecting to login');
+                window.location.href = 'login.html';
+            }
+        }, 5000);
         
         // Firebase Auth State Management with error handling
         let currentUser = null;
         
         // Wait for Firebase to load, then initialize
         window.addEventListener('load', () => {
-            // Check if this is a PWA or if Firebase is available
-            const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                         window.navigator.standalone || 
-                         document.referrer.includes('android-app://');
+            // Set a timeout to redirect if Firebase doesn't load within 3 seconds
+            const redirectTimeout = setTimeout(() => {
+                console.log('⏰ Firebase loading timeout - redirecting to login');
+                window.location.href = 'login.html';
+            }, 3000);
             
             // Check if Firebase is available
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 console.log('🔥 Firebase loaded successfully');
+                clearTimeout(redirectTimeout);
                 
                 // Initialize Firebase Auth
                 firebase.auth().onAuthStateChanged((user) => {
@@ -478,24 +488,21 @@
                         profileButton.style.display = 'block';
                         console.log('✅ User signed in:', user.displayName);
                     } else {
-                        // No user is signed in - redirect to login
+                        // No user is signed in - always redirect to login
                         console.log('❌ No user signed in, redirecting to login');
                         currentUser = null;
+                        profileButton.style.display = 'none';
+                        // Clear any existing profile data
+                        profileName.textContent = 'Not Signed In';
+                        profileEmail.textContent = 'Please sign in';
                         window.location.href = 'login.html';
                     }
                 });
             } else {
-                console.log('⚠️ Firebase not loaded, running in demo mode');
-                // Demo mode - show profile button but indicate demo mode
-                profileButton.style.display = 'block';
-                profileName.textContent = 'Demo User';
-                profileEmail.textContent = 'demo@example.com';
-                currentUser = null;
-                
-                // If this is a PWA, show a notice
-                if (isPWA) {
-                    console.log('📱 Running as PWA in demo mode');
-                }
+                console.log('⚠️ Firebase not loaded, redirecting to login');
+                clearTimeout(redirectTimeout);
+                // No Firebase - redirect to login
+                window.location.href = 'login.html';
             }
         });
         
@@ -522,23 +529,26 @@
         
         // Logout functionality
         logoutButton.addEventListener('click', () => {
+            console.log('🚪 Logout button clicked');
+            console.log('Firebase available:', typeof firebase !== 'undefined');
+            console.log('Firebase auth available:', typeof firebase !== 'undefined' && firebase.auth);
+            console.log('Current user:', currentUser);
+            
             if (typeof firebase !== 'undefined' && firebase.auth && currentUser) {
-                // User is actually signed in with Firebase
+                // User is signed in with Firebase - sign out
+                console.log('🔥 Attempting Firebase signout...');
                 firebase.auth().signOut().then(() => {
-                    console.log('🚪 User signed out');
-                    // Redirect to login page
-                    window.location.href = 'login.html';
+                    console.log('✅ Firebase signout successful');
+                    // Firebase auth state change will automatically redirect to login
                 }).catch((error) => {
-                    console.error('❌ Logout error:', error);
-                    alert('Error signing out. Please try again.');
+                    console.error('❌ Firebase signout error:', error);
+                    // Force redirect on error
+                    window.location.href = 'login.html';
                 });
             } else {
-                // Demo mode or no user signed in
-                console.log('🚪 Demo/PWA logout - redirecting to login');
-                // Show confirmation message
-                if (confirm('You are in demo mode. Would you like to go to the login page to sign in properly?')) {
-                    window.location.href = 'login.html';
-                }
+                // No Firebase or no user - force redirect to login
+                console.log('⚠️ No Firebase auth or no user, forcing redirect to login');
+                window.location.href = 'login.html';
             }
         });
         
